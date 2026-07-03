@@ -90,6 +90,14 @@ function eventUrl(event: SceneEvent) {
   return `https://www.start.gg/${event.slug}`;
 }
 
+function externalLinkProps() {
+  return {
+    "data-tooltip": "Opens in new tab",
+    rel: "noreferrer",
+    target: "_blank",
+  };
+}
+
 function selectRandomYoutubeVideoId() {
   const lastVideoId =
     typeof window === "undefined"
@@ -103,8 +111,28 @@ function selectRandomYoutubeVideoId() {
   return candidateVideos[Math.floor(Math.random() * candidateVideos.length)];
 }
 
+async function writeClipboardText(text: string) {
+  if (window.navigator.clipboard) {
+    await window.navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.style.left = "-9999px";
+  textArea.style.position = "fixed";
+  document.body.append(textArea);
+  textArea.focus();
+  textArea.select();
+  document.execCommand("copy");
+  textArea.remove();
+}
+
 function App() {
   const [feed, setFeed] = useState<EventFeed>(fallbackFeed);
+  const [emailCopyState, setEmailCopyState] = useState<"idle" | "copied">(
+    "idle",
+  );
   const [youtubeVideoId] = useState(selectRandomYoutubeVideoId);
 
   useEffect(() => {
@@ -137,21 +165,48 @@ function App() {
   );
 
   const youtubeEmbedSrc = `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?list=${YOUTUBE_PLAYLIST_ID}&rel=0`;
+  const emailCopyLabel =
+    emailCopyState === "copied" ? "Copied to clipboard" : "Click to copy";
+
+  const copyEmailAddress = async () => {
+    try {
+      await writeClipboardText(EMAIL_ADDRESS);
+      setEmailCopyState("copied");
+      window.setTimeout(() => setEmailCopyState("idle"), 1800);
+    } catch {
+      setEmailCopyState("idle");
+    }
+  };
 
   return (
     <main>
-      <section className="hero" aria-labelledby="page-title">
-        <nav className="topbar" aria-label="Primary">
-          <a className="wordmark" href="#top" aria-label="KW Tekken home">
-            KW Tekken
+      <nav className="topbar" aria-label="Primary">
+        <a className="wordmark" href="#top" aria-label="KW Tekken home">
+          KW Tekken
+        </a>
+        <div className="quick-links">
+          <a href={DISCORD_URL} {...externalLinkProps()}>
+            Discord
           </a>
-          <div className="quick-links">
-            <a href={TWITCH_URL}>Twitch</a>
-            <a href={YOUTUBE_URL}>YouTube</a>
-            <a href={`mailto:${EMAIL_ADDRESS}`}>Email</a>
-          </div>
-        </nav>
+          <a href={TWITCH_URL} {...externalLinkProps()}>
+            Twitch
+          </a>
+          <a href={YOUTUBE_URL} {...externalLinkProps()}>
+            YouTube
+          </a>
+          <button
+            aria-label={`${emailCopyLabel}: ${EMAIL_ADDRESS}`}
+            className="email-copy"
+            data-tooltip={emailCopyLabel}
+            onClick={copyEmailAddress}
+            type="button"
+          >
+            {emailCopyState === "copied" ? "Copied" : "Email"}
+          </button>
+        </div>
+      </nav>
 
+      <section className="hero" aria-labelledby="page-title">
         <div className="hero-grid" id="top">
           <section className="video-panel" aria-label="KW Tekken VOD playlist">
             <p className="video-kicker">Recent tournament footage</p>
@@ -165,10 +220,18 @@ function App() {
               />
             </div>
             <div className="video-actions">
-              <a className="button primary" href={TWITCH_URL}>
+              <a
+                className="button primary"
+                href={TWITCH_URL}
+                {...externalLinkProps()}
+              >
                 Watch live on Twitch
               </a>
-              <a className="button secondary" href={YOUTUBE_URL}>
+              <a
+                className="button secondary"
+                href={YOUTUBE_URL}
+                {...externalLinkProps()}
+              >
                 YouTube channel
               </a>
             </div>
@@ -178,7 +241,11 @@ function App() {
             <p className="eyebrow">Kitchener-Waterloo fighting game locals</p>
             <h1 id="page-title">Play Tekken in KW</h1>
             <div className="hero-actions" aria-label="Community links">
-              <a className="button primary" href={DISCORD_URL}>
+              <a
+                className="button primary"
+                href={DISCORD_URL}
+                {...externalLinkProps()}
+              >
                 Join Discord
               </a>
               <a className="button secondary" href="#events">
@@ -205,7 +272,11 @@ function App() {
               {feed.tournament.region ? `, ${feed.tournament.region}` : ""}
             </p>
           </div>
-          <a className="button compact" href={feed.sourceUrl || STARTGG_URL}>
+          <a
+            className="button compact"
+            href={feed.sourceUrl || STARTGG_URL}
+            {...externalLinkProps()}
+          >
             View on start.gg
           </a>
         </div>
@@ -213,7 +284,12 @@ function App() {
         {sortedEvents.length > 0 && (
           <div className="event-list">
             {sortedEvents.map((event) => (
-              <a className="event-card" href={eventUrl(event)} key={event.id}>
+              <a
+                className="event-card"
+                href={eventUrl(event)}
+                key={event.id}
+                {...externalLinkProps()}
+              >
                 <span className="event-card-date">
                   {formatShortDate(event.startAt)}
                 </span>
