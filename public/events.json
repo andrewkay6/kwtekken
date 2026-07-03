@@ -1,0 +1,15 @@
+{
+  "sourceUrl": "https://www.start.gg/tournament/basement-brawl-2-1/details",
+  "generatedAt": null,
+  "tournament": {
+    "name": "Basement Brawl 2",
+    "slug": "tournament/basement-brawl-2-1",
+    "startAt": 1783526400,
+    "endAt": null,
+    "venueAddress": "",
+    "city": "Kitchener-Waterloo",
+    "region": "ON",
+    "countryCode": "CA"
+  },
+  "events": []
+}
