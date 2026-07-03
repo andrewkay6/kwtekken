@@ -176,11 +176,7 @@ function App() {
 
           <div className="hero-copy">
             <p className="eyebrow">Kitchener-Waterloo fighting game locals</p>
-            <h1 id="page-title">Play Tekken in KW.</h1>
-            <p className="lede">
-              Find brackets, casuals, weekly VODs, and the people keeping the
-              local scene moving.
-            </p>
+            <h1 id="page-title">Play Tekken in KW</h1>
             <div className="hero-actions" aria-label="Community links">
               <a className="button primary" href={DISCORD_URL}>
                 Join Discord
