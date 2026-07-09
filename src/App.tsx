@@ -34,21 +34,24 @@ const TWITCH_URL = "https://twitch.tv/kwtekken";
 const YOUTUBE_URL = "https://www.youtube.com/@KWTekken";
 const EMAIL_ADDRESS = "kwtekken@gmail.com";
 const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-2-1/details";
-const YOUTUBE_PLAYLIST_ID = "PLDyBGN2GWY8E";
+const YOUTUBE_PLAYLIST_ID = "PLfv6rKhYEs1o";
 const LAST_YOUTUBE_VIDEO_KEY = "kwtekken:lastYoutubeVideoId";
 const YOUTUBE_PLAYLIST_VIDEO_IDS = [
-  "92q7NO9bBjU",
-  "SBdU5mc9s7Y",
-  "4POWB4aa4HM",
-  "KHaLOsv6t94",
-  "lOE2px750z8",
-  "d2QRABA2bO8",
-  "oRGf-MW_aX4",
-  "btFSvlUmsLc",
-  "bVSTvYKKoC4",
-  "yAEzZ2tmpj4",
-  "Zd1K6Lir7Co",
-  "PaucqtO2oaQ",
+  "gfSw34paue8",
+  "_iqM0lNskP0",
+  "va8B2Ppm7Fo",
+  "HdsIXIbzhWU",
+  "svO0WMGC5ok",
+  "NlQIEfjDFXM",
+  "9jx1xx3V1ec",
+  "GkpklQ-7u70",
+  "w6S4DhSHKnU",
+  "SLQigl7qLZQ",
+  "0Ojs2OjN_3A",
+  "0VTtkYKWQbc",
+  "zOgg7ssRYog",
+  "UCKixTWXOM8",
+  "4O5vUHFzcl8",
 ];
 
 const fallbackFeed: EventFeed = {
@@ -276,11 +279,11 @@ function App() {
           <a href={DISCORD_URL} {...externalLinkProps()}>
             Discord
           </a>
-          <a href={TWITCH_URL} {...externalLinkProps()}>
-            Twitch
-          </a>
           <a href={YOUTUBE_URL} {...externalLinkProps()}>
             YouTube
+          </a>
+          <a href={TWITCH_URL} {...externalLinkProps()}>
+            Twitch
           </a>
           <button
             aria-label={`${emailCopyLabel}: ${EMAIL_ADDRESS}`}
@@ -341,7 +344,6 @@ function App() {
           </section>
 
           <div className="hero-copy">
-            <h1 id="page-title">Pull up and play</h1>
             <p className="lede">
               Join our Discord for brackets, casuals, streams, and the next
               local.
