@@ -85,6 +85,26 @@ function formatShortDate(timestamp: number | null) {
   }).format(new Date(timestamp * 1000));
 }
 
+function isTodayOrEarlier(timestamp: number | null) {
+  if (!timestamp) return false;
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+
+  return timestamp * 1000 < tomorrow.getTime();
+}
+
+function isAfterToday(timestamp: number | null) {
+  if (!timestamp) return true;
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+
+  return timestamp * 1000 >= tomorrow.getTime();
+}
+
 function eventUrl(event: SceneEvent) {
   if (!event.slug) return STARTGG_URL;
   return `https://www.start.gg/${event.slug}`;
@@ -155,7 +175,7 @@ function App() {
 
   const sortedEvents = useMemo(
     () =>
-      [...feed.events].sort((a, b) => {
+      feed.events.filter((event) => isAfterToday(event.startAt)).sort((a, b) => {
         if (!a.startAt && !b.startAt) return a.name.localeCompare(b.name);
         if (!a.startAt) return 1;
         if (!b.startAt) return -1;
@@ -167,6 +187,7 @@ function App() {
   const youtubeEmbedSrc = `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?list=${YOUTUBE_PLAYLIST_ID}&rel=0`;
   const emailCopyLabel =
     emailCopyState === "copied" ? "Copied to clipboard" : "Click to copy";
+  const shouldShowUpcomingNotice = isTodayOrEarlier(feed.tournament.startAt);
 
   const copyEmailAddress = async () => {
     try {
@@ -263,23 +284,33 @@ function App() {
           <p>Current brackets and registration live on start.gg.</p>
         </div>
 
-        <div className="event-feature">
-          <div>
-            <p className="event-date">{formatDate(feed.tournament.startAt)}</p>
-            <h3>{feed.tournament.name}</h3>
-            <p>
-              {feed.tournament.city}
-              {feed.tournament.region ? `, ${feed.tournament.region}` : ""}
-            </p>
+        {shouldShowUpcomingNotice ? (
+          <div className="event-feature">
+            <div>
+              <p className="event-date">More events soon</p>
+              <h3>Stay tuned for upcoming event announcements.</h3>
+              <p>Join the Discord for the latest KW Tekken local updates.</p>
+            </div>
           </div>
-          <a
-            className="button compact"
-            href={feed.sourceUrl || STARTGG_URL}
-            {...externalLinkProps()}
-          >
-            View on start.gg
-          </a>
-        </div>
+        ) : (
+          <div className="event-feature">
+            <div>
+              <p className="event-date">{formatDate(feed.tournament.startAt)}</p>
+              <h3>{feed.tournament.name}</h3>
+              <p>
+                {feed.tournament.city}
+                {feed.tournament.region ? `, ${feed.tournament.region}` : ""}
+              </p>
+            </div>
+            <a
+              className="button compact"
+              href={feed.sourceUrl || STARTGG_URL}
+              {...externalLinkProps()}
+            >
+              View on start.gg
+            </a>
+          </div>
+        )}
 
         {sortedEvents.length > 0 && (
           <div className="event-list">
