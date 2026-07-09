@@ -1,3 +1,5 @@
+import Lenis from "lenis";
+import Snap from "lenis/snap";
 import { useEffect, useMemo, useState } from "react";
 
 type TournamentInfo = {
@@ -153,6 +155,7 @@ function App() {
   const [emailCopyState, setEmailCopyState] = useState<"idle" | "copied">(
     "idle",
   );
+  const [activeSection, setActiveSection] = useState<"top" | "events">("top");
   const [youtubeVideoId] = useState(selectRandomYoutubeVideoId);
 
   useEffect(() => {
@@ -172,6 +175,70 @@ function App() {
   useEffect(() => {
     window.localStorage.setItem(LAST_YOUTUBE_VIDEO_KEY, youtubeVideoId);
   }, [youtubeVideoId]);
+
+  useEffect(() => {
+    const updateActiveSection = () => {
+      const eventsSection = document.getElementById("events");
+      if (!eventsSection) return;
+
+      setActiveSection(
+        eventsSection.getBoundingClientRect().top <= window.innerHeight * 0.55
+          ? "events"
+          : "top",
+      );
+    };
+    const scrollContainer = document.querySelector("main");
+
+    updateActiveSection();
+    scrollContainer?.addEventListener("scroll", updateActiveSection, {
+      passive: true,
+    });
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+
+    return () => {
+      scrollContainer?.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+    };
+  }, []);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    if (prefersReducedMotion.matches) return;
+
+    const lenis = new Lenis({
+      anchors: {
+        duration: 1,
+        lock: false,
+      },
+      autoRaf: true,
+      duration: 1.15,
+      smoothWheel: true,
+      wheelMultiplier: 0.85,
+    });
+    const snap = new Snap(lenis, {
+      debounce: 40,
+      distanceThreshold: "100%",
+      duration: 0.95,
+      easing: (time) => 1 - Math.pow(1 - time, 3),
+      lerp: 0.18,
+      type: "lock",
+    });
+    const snapSections = ["top", "events"].flatMap((id) => {
+      const section = document.getElementById(id);
+      return section ? [section] : [];
+    });
+
+    snap.addElements(snapSections, { align: "start" });
+
+    return () => {
+      snap.destroy();
+      lenis.destroy();
+    };
+  }, []);
 
   const sortedEvents = useMemo(
     () =>
@@ -227,8 +294,23 @@ function App() {
         </div>
       </nav>
 
-      <section className="hero" aria-labelledby="page-title">
-        <div className="hero-grid" id="top">
+      <nav className="section-dots" aria-label="Page sections">
+        <a
+          aria-label="Video section"
+          aria-current={activeSection === "top" ? "true" : undefined}
+          className={activeSection === "top" ? "active" : ""}
+          href="#top"
+        />
+        <a
+          aria-label="Events section"
+          aria-current={activeSection === "events" ? "true" : undefined}
+          className={activeSection === "events" ? "active" : ""}
+          href="#events"
+        />
+      </nav>
+
+      <section className="hero snap-section" id="top" aria-labelledby="page-title">
+        <div className="hero-grid">
           <section className="video-panel" aria-label="KW Tekken VOD playlist">
             <p className="video-kicker">Recent tournament footage</p>
             <div className="video-frame">
@@ -259,8 +341,11 @@ function App() {
           </section>
 
           <div className="hero-copy">
-            <p className="eyebrow">Kitchener-Waterloo fighting game locals</p>
-            <h1 id="page-title">Play Tekken in KW</h1>
+            <h1 id="page-title">Pull up and play</h1>
+            <p className="lede">
+              Join our Discord for brackets, casuals, streams, and the next
+              local.
+            </p>
             <div className="hero-actions" aria-label="Community links">
               <a
                 className="button primary"
@@ -277,7 +362,7 @@ function App() {
         </div>
       </section>
 
-      <section className="section events-section" id="events">
+      <section className="section events-section snap-section" id="events">
         <div className="section-heading">
           <p className="eyebrow">From start.gg</p>
           <h2>Upcoming events</h2>
@@ -289,7 +374,18 @@ function App() {
             <div>
               <p className="event-date">More events soon</p>
               <h3>Stay tuned for upcoming event announcements.</h3>
-              <p>Join the Discord for the latest KW Tekken local updates.</p>
+              <p>
+                Join the{" "}
+                <a
+                  className="text-link"
+                  href={DISCORD_URL}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Discord
+                </a>{" "}
+                for the latest KW Tekken local updates.
+              </p>
             </div>
           </div>
         ) : (
