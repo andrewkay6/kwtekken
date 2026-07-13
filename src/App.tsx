@@ -251,17 +251,15 @@ function App() {
   useEffect(() => {
     const updateActiveSection = () => {
       let currentSection: SectionId = "top";
-      let closestDistance = Number.POSITIVE_INFINITY;
-      const readingLine = window.innerHeight * 0.42;
+      const topbar = document.querySelector(".topbar");
+      const activationLine =
+        (topbar?.getBoundingClientRect().bottom || 0) + 24;
 
       for (const id of SECTION_IDS) {
         const section = document.getElementById(id);
         if (!section) continue;
 
-        const distance = Math.abs(section.getBoundingClientRect().top - readingLine);
-
-        if (distance < closestDistance) {
-          closestDistance = distance;
+        if (section.getBoundingClientRect().top <= activationLine) {
           currentSection = id;
         }
       }
@@ -436,7 +434,7 @@ function App() {
         <div className="hero-grid">
           <section className="video-panel" aria-label="KW Tekken VOD playlist">
             <p className="section-label">Featured showcase</p>
-            <h2>Recent tournament footage</h2>
+            <h2>Tournament footage</h2>
             <div className="video-frame">
               <iframe
                 key={youtubeVideoId}
