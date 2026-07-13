@@ -381,6 +381,11 @@ function App() {
     setPhotoSwipe(null);
   };
 
+  const cancelPhotoTouch = () => {
+    photoTouchStartX.current = null;
+    setPhotoSwipe(null);
+  };
+
   const updatePhotoSwipeProgress = (deltaX: number) => {
     if (Math.abs(deltaX) < 8) {
       setPhotoSwipe(null);
@@ -406,7 +411,10 @@ function App() {
     if (photoTouchStartX.current === null) return;
 
     const endX = event.changedTouches[0]?.clientX;
-    if (typeof endX !== "number") return;
+    if (typeof endX !== "number") {
+      cancelPhotoTouch();
+      return;
+    }
 
     const deltaX = endX - photoTouchStartX.current;
     photoTouchStartX.current = null;
@@ -425,9 +433,20 @@ function App() {
   const handlePhotoPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "touch") return;
 
+    event.currentTarget.setPointerCapture(event.pointerId);
     photoPointerStartX.current = event.clientX;
     didDragPhoto.current = false;
     setPhotoSwipe(null);
+  };
+
+  const resetPhotoPointerPosition = () => {
+    photoPointerStartX.current = null;
+    setPhotoSwipe(null);
+  };
+
+  const cancelPhotoPointer = () => {
+    resetPhotoPointerPosition();
+    didDragPhoto.current = false;
   };
 
   const handlePhotoPointerMove = (event: PointerEvent<HTMLDivElement>) => {
@@ -448,6 +467,10 @@ function App() {
     const deltaX = event.clientX - photoPointerStartX.current;
     photoPointerStartX.current = null;
     setPhotoSwipe(null);
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
 
     if (Math.abs(deltaX) < 48) {
       didDragPhoto.current = false;
@@ -673,8 +696,11 @@ function App() {
           <div
             className="photo-stage"
             onPointerDown={handlePhotoPointerDown}
+            onPointerCancel={cancelPhotoPointer}
+            onLostPointerCapture={resetPhotoPointerPosition}
             onPointerMove={handlePhotoPointerMove}
             onPointerUp={handlePhotoPointerUp}
+            onTouchCancel={cancelPhotoTouch}
             onTouchEnd={handlePhotoTouchEnd}
             onTouchMove={handlePhotoTouchMove}
             onTouchStart={handlePhotoTouchStart}
