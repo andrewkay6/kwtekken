@@ -1,6 +1,7 @@
 import Lenis from "lenis";
 import Snap from "lenis/snap";
-import { useEffect, useMemo, useState } from "react";
+import type { PointerEvent, TouchEvent } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type TournamentInfo = {
   name: string;
@@ -31,6 +32,7 @@ type EventFeed = {
 
 type SectionId = "top" | "events" | "photos";
 type IconName = "discord" | "youtube" | "twitch" | "email";
+type SwipeDirection = "left" | "right";
 
 const DISCORD_URL = "https://discord.gg/mCwGVgjXED";
 const TWITCH_URL = "https://twitch.tv/kwtekken";
@@ -228,7 +230,14 @@ function App() {
   );
   const [activeSection, setActiveSection] = useState<SectionId>("top");
   const [activePhotoIndex, setActivePhotoIndex] = useState(2);
+  const [photoSwipe, setPhotoSwipe] = useState<{
+    direction: SwipeDirection;
+    progress: number;
+  } | null>(null);
   const [youtubeVideoId] = useState(selectRandomYoutubeVideoId);
+  const photoTouchStartX = useRef<number | null>(null);
+  const photoPointerStartX = useRef<number | null>(null);
+  const didDragPhoto = useRef(false);
 
   useEffect(() => {
     fetch("/events.json", { cache: "no-cache" })
@@ -344,16 +353,114 @@ function App() {
       setEmailCopyState("idle");
     }
   };
-  const carouselPhotos = [-2, -1, 0, 1, 2].map((offset) => {
-    const index =
-      (activePhotoIndex + offset + photoPlaceholders.length) %
-      photoPlaceholders.length;
+  const getPhotoOffset = (index: number) => {
+    const photoCount = photoPlaceholders.length;
+    const forwardOffset = (index - activePhotoIndex + photoCount) % photoCount;
 
-    return {
-      ...photoPlaceholders[index],
-      offset,
-    };
-  });
+    return forwardOffset > photoCount / 2
+      ? forwardOffset - photoCount
+      : forwardOffset;
+  };
+
+  const showPreviousPhoto = () => {
+    setActivePhotoIndex(
+      (currentIndex) =>
+        (currentIndex - 1 + photoPlaceholders.length) %
+        photoPlaceholders.length,
+    );
+  };
+
+  const showNextPhoto = () => {
+    setActivePhotoIndex(
+      (currentIndex) => (currentIndex + 1) % photoPlaceholders.length,
+    );
+  };
+
+  const handlePhotoTouchStart = (event: TouchEvent<HTMLDivElement>) => {
+    photoTouchStartX.current = event.touches[0]?.clientX ?? null;
+    setPhotoSwipe(null);
+  };
+
+  const updatePhotoSwipeProgress = (deltaX: number) => {
+    if (Math.abs(deltaX) < 8) {
+      setPhotoSwipe(null);
+      return;
+    }
+
+    setPhotoSwipe({
+      direction: deltaX < 0 ? "left" : "right",
+      progress: Math.min(Math.abs(deltaX) / 96, 1),
+    });
+  };
+
+  const handlePhotoTouchMove = (event: TouchEvent<HTMLDivElement>) => {
+    if (photoTouchStartX.current === null) return;
+
+    const currentX = event.touches[0]?.clientX;
+    if (typeof currentX !== "number") return;
+
+    updatePhotoSwipeProgress(currentX - photoTouchStartX.current);
+  };
+
+  const handlePhotoTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
+    if (photoTouchStartX.current === null) return;
+
+    const endX = event.changedTouches[0]?.clientX;
+    if (typeof endX !== "number") return;
+
+    const deltaX = endX - photoTouchStartX.current;
+    photoTouchStartX.current = null;
+    setPhotoSwipe(null);
+
+    if (Math.abs(deltaX) < 42) return;
+
+    if (deltaX < 0) {
+      showNextPhoto();
+      return;
+    }
+
+    showPreviousPhoto();
+  };
+
+  const handlePhotoPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "touch") return;
+
+    photoPointerStartX.current = event.clientX;
+    didDragPhoto.current = false;
+    setPhotoSwipe(null);
+  };
+
+  const handlePhotoPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (photoPointerStartX.current === null) return;
+
+    const deltaX = event.clientX - photoPointerStartX.current;
+
+    updatePhotoSwipeProgress(deltaX);
+
+    if (Math.abs(deltaX) > 8) {
+      didDragPhoto.current = true;
+    }
+  };
+
+  const handlePhotoPointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    if (photoPointerStartX.current === null) return;
+
+    const deltaX = event.clientX - photoPointerStartX.current;
+    photoPointerStartX.current = null;
+    setPhotoSwipe(null);
+
+    if (Math.abs(deltaX) < 48) {
+      didDragPhoto.current = false;
+      return;
+    }
+
+    if (deltaX < 0) {
+      showNextPhoto();
+      return;
+    }
+
+    showPreviousPhoto();
+  };
 
   return (
     <main>
@@ -563,29 +670,55 @@ function App() {
         </div>
 
         <div className="photo-carousel" aria-label="Event photo carousel">
-          <div className="photo-stage">
-            {carouselPhotos.map((gallery) => (
+          <div
+            className="photo-stage"
+            onPointerDown={handlePhotoPointerDown}
+            onPointerMove={handlePhotoPointerMove}
+            onPointerUp={handlePhotoPointerUp}
+            onTouchEnd={handlePhotoTouchEnd}
+            onTouchMove={handlePhotoTouchMove}
+            onTouchStart={handlePhotoTouchStart}
+          >
+            {photoPlaceholders.map((gallery, index) => {
+              const offset = getPhotoOffset(index);
+
+              return (
               <button
                 aria-label={`Show ${gallery.eventName} photo`}
-                className={`photo-card photo-card-${gallery.offset}`}
-                key={`${gallery.src}-${gallery.offset}`}
-                onClick={() =>
-                  setActivePhotoIndex(
-                    photoPlaceholders.findIndex(
-                      (photo) => photo.src === gallery.src,
-                    ),
-                  )
-                }
+                className={`photo-card photo-card-${offset}`}
+                key={gallery.src}
+                onClick={() => {
+                  if (didDragPhoto.current) {
+                    didDragPhoto.current = false;
+                    return;
+                  }
+
+                  setActivePhotoIndex(index);
+                }}
                 type="button"
               >
-              <img
-                alt={`${gallery.eventName} event photo`}
-                className="event-photo"
-                loading="lazy"
-                src={gallery.src}
-              />
+                <img
+                  alt={`${gallery.eventName} event photo`}
+                  className="event-photo"
+                  draggable={false}
+                  loading="lazy"
+                  src={gallery.src}
+                />
               </button>
-            ))}
+              );
+            })}
+            <div
+              aria-hidden="true"
+              className={`swipe-progress ${
+                photoSwipe ? `swipe-progress-${photoSwipe.direction}` : ""
+              }`}
+            >
+              <span
+                style={{
+                  transform: `scaleX(${photoSwipe?.progress ?? 0})`,
+                }}
+              />
+            </div>
           </div>
         </div>
       </section>
