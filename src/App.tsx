@@ -29,11 +29,14 @@ type EventFeed = {
   events: SceneEvent[];
 };
 
+type SectionId = "top" | "events" | "photos";
+type IconName = "discord" | "youtube" | "twitch" | "email";
+
 const DISCORD_URL = "https://discord.gg/mCwGVgjXED";
 const TWITCH_URL = "https://twitch.tv/kwtekken";
 const YOUTUBE_URL = "https://www.youtube.com/@KWTekken";
 const EMAIL_ADDRESS = "kwtekken@gmail.com";
-const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-2-1/details";
+const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-3-2/details";
 const YOUTUBE_PLAYLIST_ID = "PLfv6rKhYEs1o";
 const LAST_YOUTUBE_VIDEO_KEY = "kwtekken:lastYoutubeVideoId";
 const YOUTUBE_PLAYLIST_VIDEO_IDS = [
@@ -53,17 +56,45 @@ const YOUTUBE_PLAYLIST_VIDEO_IDS = [
   "UCKixTWXOM8",
   "4O5vUHFzcl8",
 ];
+const SECTION_IDS: SectionId[] = ["top", "events", "photos"];
+const photoPlaceholders = [
+  {
+    eventName: "Basement Brawl 2",
+    caption: "June 24, 2026",
+    src: "/event-photos/20260624_203608.webp",
+  },
+  {
+    eventName: "Basement Brawl 2",
+    caption: "June 24, 2026",
+    src: "/event-photos/20260624_203626.webp",
+  },
+  {
+    eventName: "Basement Brawl 3",
+    caption: "July 8, 2026",
+    src: "/event-photos/20260708_192104.webp",
+  },
+  {
+    eventName: "Basement Brawl 3",
+    caption: "July 8, 2026",
+    src: "/event-photos/20260708_192115.webp",
+  },
+  {
+    eventName: "Basement Brawl 3",
+    caption: "July 8, 2026",
+    src: "/event-photos/20260708_210208.webp",
+  },
+];
 
 const fallbackFeed: EventFeed = {
   sourceUrl: STARTGG_URL,
   generatedAt: null,
   tournament: {
-    name: "Basement Brawl 2",
-    slug: "tournament/basement-brawl-2-1",
-    startAt: 1783526400,
+    name: "Basement Brawl 3",
+    slug: "tournament/basement-brawl-3-2",
+    startAt: 1784692800,
     endAt: null,
-    venueAddress: "",
-    city: "Kitchener-Waterloo",
+    venueAddress: "247 King St N Unit 8 Basement Level, Waterloo, ON N2J 2Y8, Canada",
+    city: "Waterloo",
     region: "ON",
     countryCode: "CA",
   },
@@ -123,6 +154,43 @@ function externalLinkProps() {
   };
 }
 
+function Icon({ name }: { name: IconName }) {
+  if (name === "discord") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M7.2 7.1c1.3-.8 3-1.2 4.8-1.2s3.5.4 4.8 1.2c1.4 2.5 1.9 5.3 1.6 8.1-1 .9-2.1 1.5-3.4 1.9l-.9-1.6c-1.4.4-2.8.4-4.2 0L9 17.1c-1.3-.4-2.4-1-3.4-1.9-.3-2.8.2-5.6 1.6-8.1Z" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
+        <path d="M9.4 11.5a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm3.2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" fill="currentColor" />
+        <path d="M9.6 14.4c1.6.7 3.2.7 4.8 0" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="1.4" />
+      </svg>
+    );
+  }
+
+  if (name === "youtube") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M4.4 8.2c.2-1.4 1.1-2.3 2.5-2.5 3.4-.3 6.8-.3 10.2 0 1.4.2 2.3 1.1 2.5 2.5.3 2.5.3 5.1 0 7.6-.2 1.4-1.1 2.3-2.5 2.5-3.4.3-6.8.3-10.2 0-1.4-.2-2.3-1.1-2.5-2.5-.3-2.5-.3-5.1 0-7.6Z" fill="none" stroke="currentColor" strokeWidth="1.8" />
+        <path d="m10.2 8.8 5 3.2-5 3.2V8.8Z" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (name === "twitch") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M6.4 4.5h12.1v8.4l-3.4 3.4h-3l-2.6 2.6v-2.6H5.4V7.1l1-2.6Z" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
+        <path d="M10.2 8.4v4.1M14.4 8.4v4.1" stroke="currentColor" strokeLinecap="square" strokeWidth="1.8" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M4.5 7.2h15v9.6h-15V7.2Z" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
+      <path d="m5.3 8 6.7 5.2L18.7 8" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 function selectRandomYoutubeVideoId() {
   const lastVideoId =
     typeof window === "undefined"
@@ -158,7 +226,8 @@ function App() {
   const [emailCopyState, setEmailCopyState] = useState<"idle" | "copied">(
     "idle",
   );
-  const [activeSection, setActiveSection] = useState<"top" | "events">("top");
+  const [activeSection, setActiveSection] = useState<SectionId>("top");
+  const [activePhotoIndex, setActivePhotoIndex] = useState(2);
   const [youtubeVideoId] = useState(selectRandomYoutubeVideoId);
 
   useEffect(() => {
@@ -181,14 +250,23 @@ function App() {
 
   useEffect(() => {
     const updateActiveSection = () => {
-      const eventsSection = document.getElementById("events");
-      if (!eventsSection) return;
+      let currentSection: SectionId = "top";
+      let closestDistance = Number.POSITIVE_INFINITY;
+      const readingLine = window.innerHeight * 0.42;
 
-      setActiveSection(
-        eventsSection.getBoundingClientRect().top <= window.innerHeight * 0.55
-          ? "events"
-          : "top",
-      );
+      for (const id of SECTION_IDS) {
+        const section = document.getElementById(id);
+        if (!section) continue;
+
+        const distance = Math.abs(section.getBoundingClientRect().top - readingLine);
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          currentSection = id;
+        }
+      }
+
+      setActiveSection(currentSection);
     };
     const scrollContainer = document.querySelector("main");
 
@@ -230,7 +308,7 @@ function App() {
       lerp: 0.18,
       type: "lock",
     });
-    const snapSections = ["top", "events"].flatMap((id) => {
+    const snapSections = SECTION_IDS.flatMap((id) => {
       const section = document.getElementById(id);
       return section ? [section] : [];
     });
@@ -268,6 +346,16 @@ function App() {
       setEmailCopyState("idle");
     }
   };
+  const carouselPhotos = [-2, -1, 0, 1, 2].map((offset) => {
+    const index =
+      (activePhotoIndex + offset + photoPlaceholders.length) %
+      photoPlaceholders.length;
+
+    return {
+      ...photoPlaceholders[index],
+      offset,
+    };
+  });
 
   return (
     <main>
@@ -275,15 +363,38 @@ function App() {
         <a className="wordmark" href="#top" aria-label="KW Tekken home">
           KW Tekken
         </a>
+        <div className="page-links">
+          <a
+            aria-current={activeSection === "top" ? "page" : undefined}
+            href="#top"
+          >
+            Featured
+          </a>
+          <a
+            aria-current={activeSection === "events" ? "page" : undefined}
+            href="#events"
+          >
+            Events
+          </a>
+          <a
+            aria-current={activeSection === "photos" ? "page" : undefined}
+            href="#photos"
+          >
+            Photos
+          </a>
+        </div>
         <div className="quick-links">
-          <a href={DISCORD_URL} {...externalLinkProps()}>
-            Discord
+          <a aria-label="Discord" href={DISCORD_URL} {...externalLinkProps()}>
+            <Icon name="discord" />
+            <span className="sr-only">Discord</span>
           </a>
-          <a href={YOUTUBE_URL} {...externalLinkProps()}>
-            YouTube
+          <a aria-label="YouTube" href={YOUTUBE_URL} {...externalLinkProps()}>
+            <Icon name="youtube" />
+            <span className="sr-only">YouTube</span>
           </a>
-          <a href={TWITCH_URL} {...externalLinkProps()}>
-            Twitch
+          <a aria-label="Twitch" href={TWITCH_URL} {...externalLinkProps()}>
+            <Icon name="twitch" />
+            <span className="sr-only">Twitch</span>
           </a>
           <button
             aria-label={`${emailCopyLabel}: ${EMAIL_ADDRESS}`}
@@ -292,7 +403,10 @@ function App() {
             onClick={copyEmailAddress}
             type="button"
           >
-            {emailCopyState === "copied" ? "Copied" : "Email"}
+            <Icon name="email" />
+            <span className="sr-only">
+              {emailCopyState === "copied" ? "Copied" : "Email"}
+            </span>
           </button>
         </div>
       </nav>
@@ -310,12 +424,19 @@ function App() {
           className={activeSection === "events" ? "active" : ""}
           href="#events"
         />
+        <a
+          aria-label="Event photos section"
+          aria-current={activeSection === "photos" ? "true" : undefined}
+          className={activeSection === "photos" ? "active" : ""}
+          href="#photos"
+        />
       </nav>
 
       <section className="hero snap-section" id="top" aria-labelledby="page-title">
         <div className="hero-grid">
           <section className="video-panel" aria-label="KW Tekken VOD playlist">
-            <p className="video-kicker">Recent tournament footage</p>
+            <p className="section-label">Featured showcase</p>
+            <h2>Recent tournament footage</h2>
             <div className="video-frame">
               <iframe
                 key={youtubeVideoId}
@@ -366,7 +487,7 @@ function App() {
 
       <section className="section events-section snap-section" id="events">
         <div className="section-heading">
-          <p className="eyebrow">From start.gg</p>
+          <p className="section-label">From start.gg</p>
           <h2>Upcoming events</h2>
           <p>Current brackets and registration live on start.gg.</p>
         </div>
@@ -435,6 +556,40 @@ function App() {
             ))}
           </div>
         )}
+      </section>
+
+      <section className="section photos-section snap-section" id="photos">
+        <div className="section-heading">
+          <p className="section-label">From the venue</p>
+          <h2>Event photos</h2>
+        </div>
+
+        <div className="photo-carousel" aria-label="Event photo carousel">
+          <div className="photo-stage">
+            {carouselPhotos.map((gallery) => (
+              <button
+                aria-label={`Show ${gallery.eventName} photo`}
+                className={`photo-card photo-card-${gallery.offset}`}
+                key={`${gallery.src}-${gallery.offset}`}
+                onClick={() =>
+                  setActivePhotoIndex(
+                    photoPlaceholders.findIndex(
+                      (photo) => photo.src === gallery.src,
+                    ),
+                  )
+                }
+                type="button"
+              >
+              <img
+                alt={`${gallery.eventName} event photo`}
+                className="event-photo"
+                loading="lazy"
+                src={gallery.src}
+              />
+              </button>
+            ))}
+          </div>
+        </div>
       </section>
 
     </main>

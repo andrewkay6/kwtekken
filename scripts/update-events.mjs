@@ -3,10 +3,10 @@ import { dirname, resolve } from "node:path";
 
 const STARTGG_API = "https://api.start.gg/gql/alpha";
 const TOURNAMENT_SLUG =
-  process.env.STARTGG_TOURNAMENT_SLUG || "tournament/basement-brawl-2-1";
+  process.env.STARTGG_TOURNAMENT_SLUG || "tournament/basement-brawl-3-2";
 const SOURCE_URL =
   process.env.STARTGG_SOURCE_URL ||
-  "https://www.start.gg/tournament/basement-brawl-2-1/details";
+  "https://www.start.gg/tournament/basement-brawl-3-2/details";
 const OUTFILE = resolve("public/events.json");
 
 const token = process.env.STARTGG_TOKEN;

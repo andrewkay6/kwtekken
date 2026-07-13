@@ -44,6 +44,16 @@ button {
   font: inherit;
 }
 
+.sr-only {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 main {
   overflow: hidden;
 }
@@ -54,7 +64,7 @@ main {
 
 .hero {
   min-height: 100svh;
-  padding: 6rem 1rem 1.25rem;
+  padding: 8.5rem 1rem 1.25rem;
   position: relative;
 }
 
@@ -65,6 +75,7 @@ main {
   border: 1px solid rgba(248, 244, 235, 0.12);
   display: grid;
   gap: 0.75rem;
+  grid-template-columns: 1fr;
   left: 1rem;
   margin: 0 auto;
   max-width: 72rem;
@@ -119,6 +130,31 @@ main {
   text-transform: uppercase;
 }
 
+.page-links {
+  display: flex;
+  gap: 0.45rem;
+  justify-content: center;
+}
+
+.page-links a {
+  align-items: center;
+  border: 1px solid transparent;
+  color: rgba(248, 244, 235, 0.72);
+  display: inline-flex;
+  font-size: 0.72rem;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.65rem;
+  text-transform: uppercase;
+}
+
+.page-links a:hover,
+.page-links a[aria-current="page"] {
+  border-color: rgba(126, 213, 215, 0.45);
+  color: #f8f4eb;
+}
+
 .quick-links {
   display: grid;
   gap: 0.45rem;
@@ -127,16 +163,26 @@ main {
 
 .quick-links a,
 .quick-links button {
+  align-items: center;
   background: transparent;
   border: 1px solid rgba(248, 244, 235, 0.16);
   color: rgba(248, 244, 235, 0.78);
+  display: inline-flex;
   font-size: 0.68rem;
   font-weight: 800;
+  justify-content: center;
   min-height: 2rem;
   min-width: 0;
   padding: 0.4rem 0.55rem;
   position: relative;
+  text-align: center;
   text-transform: uppercase;
+}
+
+.quick-links svg {
+  display: block;
+  height: 1.05rem;
+  width: 1.05rem;
 }
 
 .quick-links a:hover,
@@ -197,6 +243,14 @@ main {
   text-transform: uppercase;
 }
 
+.section-label {
+  color: rgba(248, 244, 235, 0.74);
+  font-size: clamp(0.9rem, 3.2vw, 1.08rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0 0 0.55rem;
+}
+
 .video-frame {
   aspect-ratio: 16 / 9;
   background: #050505;
@@ -249,10 +303,10 @@ h1 {
 }
 
 h2 {
-  font-size: clamp(2.2rem, 11vw, 4.8rem);
+  font-size: clamp(1.85rem, 9vw, 4.8rem);
   letter-spacing: 0;
   line-height: 0.95;
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.65rem;
 }
 
 h3 {
@@ -318,10 +372,11 @@ h3 {
 .section {
   margin: 0 auto;
   max-width: 72rem;
-  padding: 4.5rem 1rem 5.75rem;
+  padding: 8.5rem 1rem 4rem;
 }
 
-.events-section {
+.events-section,
+.photos-section {
   align-content: center;
   display: grid;
   min-height: 100svh;
@@ -329,7 +384,7 @@ h3 {
 }
 
 .section-heading {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.15rem;
 }
 
 .event-feature {
@@ -388,6 +443,122 @@ h3 {
   color: rgba(248, 244, 235, 0.58);
 }
 
+.photo-carousel {
+  margin-inline: auto;
+  max-width: 58rem;
+  width: 100%;
+}
+
+.photo-card {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: default;
+  display: block;
+  left: 50%;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition:
+    filter 180ms ease,
+    opacity 180ms ease,
+    transform 180ms ease,
+    z-index 180ms ease;
+}
+
+.photo-card--1,
+.photo-card-1,
+.photo-card--2,
+.photo-card-2 {
+  cursor: pointer;
+}
+
+.event-photo {
+  aspect-ratio: 4 / 5;
+  display: block;
+  height: auto;
+  object-fit: cover;
+  width: 100%;
+}
+
+.photo-stage {
+  height: clamp(19rem, 64vw, 34rem);
+  overflow: hidden;
+  position: relative;
+}
+
+.photo-card-0 {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  width: min(68vw, 24rem);
+  z-index: 5;
+}
+
+.photo-card--1,
+.photo-card-1 {
+  filter: grayscale(0.2);
+  opacity: 0.45;
+  width: min(54vw, 18rem);
+  z-index: 3;
+}
+
+.photo-card--1 {
+  transform: translate(-142%, -50%) scale(0.86);
+}
+
+.photo-card-1 {
+  transform: translate(42%, -50%) scale(0.86);
+}
+
+.photo-card--2,
+.photo-card-2 {
+  filter: grayscale(0.45);
+  opacity: 0.18;
+  width: min(48vw, 15rem);
+  z-index: 1;
+}
+
+.photo-card--2 {
+  transform: translate(-222%, -50%) scale(0.74);
+}
+
+.photo-card-2 {
+  transform: translate(122%, -50%) scale(0.74);
+}
+
+.photo-card--1:hover,
+.photo-card--1:focus-visible,
+.photo-card-1:hover,
+.photo-card-1:focus-visible,
+.photo-card--2:hover,
+.photo-card--2:focus-visible,
+.photo-card-2:hover,
+.photo-card-2:focus-visible {
+  filter: grayscale(0);
+  opacity: 0.72;
+}
+
+.photo-card--1:hover,
+.photo-card--1:focus-visible {
+  transform: translate(-142%, -51.5%) scale(0.9);
+}
+
+.photo-card-1:hover,
+.photo-card-1:focus-visible {
+  transform: translate(42%, -51.5%) scale(0.9);
+}
+
+.photo-card--2:hover,
+.photo-card--2:focus-visible {
+  transform: translate(-222%, -51.5%) scale(0.78);
+}
+
+.photo-card-2:hover,
+.photo-card-2:focus-visible {
+  transform: translate(122%, -51.5%) scale(0.78);
+}
+
 @media (min-width: 44rem) {
   .hero {
     padding: 6rem 1.5rem 1.5rem;
@@ -407,6 +578,15 @@ h3 {
     text-align: left;
   }
 
+  .page-links {
+    margin-left: auto;
+  }
+
+  .page-links a {
+    font-size: 0.82rem;
+    min-width: 4.25rem;
+  }
+
   .quick-links {
     display: flex;
     flex-wrap: wrap;
@@ -422,15 +602,20 @@ h3 {
     transform: translateY(-50%);
   }
 
-  .events-section {
+  .events-section,
+  .photos-section {
     scroll-snap-align: start;
   }
 
   .quick-links a,
   .quick-links button {
-    font-size: 0.82rem;
-    min-width: 4.25rem;
-    padding-inline: 0.7rem;
+    min-width: 2.55rem;
+    padding-inline: 0.65rem;
+  }
+
+  .quick-links svg {
+    height: 1.15rem;
+    width: 1.15rem;
   }
 
   .hero-actions,
@@ -463,5 +648,44 @@ h3 {
 
   .section {
     padding: 6rem 1.5rem;
+  }
+}
+
+@media (max-width: 43.99rem) and (max-height: 740px) {
+  .hero {
+    padding-top: 7.75rem;
+  }
+
+  .section {
+    padding-top: 7.75rem;
+    padding-bottom: 3.5rem;
+  }
+
+  .hero-grid {
+    gap: 0.85rem;
+    min-height: calc(100svh - 9rem);
+  }
+
+  .video-panel {
+    gap: 0.45rem;
+  }
+
+  .section-label {
+    font-size: 0.82rem;
+    margin-bottom: 0.35rem;
+  }
+
+  h2 {
+    font-size: clamp(1.6rem, 8vw, 2.15rem);
+    margin-bottom: 0.45rem;
+  }
+
+  .lede,
+  .section-heading p {
+    font-size: 0.94rem;
+  }
+
+  .photo-stage {
+    height: clamp(15rem, 56vw, 24rem);
   }
 }
