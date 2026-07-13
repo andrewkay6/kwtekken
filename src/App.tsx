@@ -474,6 +474,17 @@ function App() {
 
     if (Math.abs(deltaX) < 48) {
       didDragPhoto.current = false;
+      const target =
+        document.elementFromPoint(event.clientX, event.clientY) ||
+        (event.target as HTMLElement);
+      const photoButton =
+        target.closest<HTMLButtonElement>("[data-photo-index]");
+      const photoIndex = Number(photoButton?.dataset.photoIndex);
+
+      if (Number.isInteger(photoIndex)) {
+        setActivePhotoIndex(photoIndex);
+      }
+
       return;
     }
 
@@ -712,6 +723,7 @@ function App() {
               <button
                 aria-label={`Show ${gallery.eventName} photo`}
                 className={`photo-card photo-card-${offset}`}
+                data-photo-index={index}
                 key={gallery.src}
                 onClick={() => {
                   if (didDragPhoto.current) {
