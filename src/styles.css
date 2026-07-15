@@ -488,8 +488,9 @@ h3 {
   cursor: grab;
   height: clamp(19rem, 64vw, 34rem);
   overflow: hidden;
+  overscroll-behavior: contain;
   position: relative;
-  touch-action: pan-y;
+  touch-action: none;
   user-select: none;
 }
 

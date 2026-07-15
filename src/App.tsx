@@ -236,6 +236,8 @@ function App() {
   } | null>(null);
   const [youtubeVideoId] = useState(selectRandomYoutubeVideoId);
   const photoTouchStartX = useRef<number | null>(null);
+  const photoTouchStartY = useRef<number | null>(null);
+  const photoTouchIsHorizontal = useRef(false);
   const photoPointerStartX = useRef<number | null>(null);
   const didDragPhoto = useRef(false);
 
@@ -378,11 +380,15 @@ function App() {
 
   const handlePhotoTouchStart = (event: TouchEvent<HTMLDivElement>) => {
     photoTouchStartX.current = event.touches[0]?.clientX ?? null;
+    photoTouchStartY.current = event.touches[0]?.clientY ?? null;
+    photoTouchIsHorizontal.current = false;
     setPhotoSwipe(null);
   };
 
   const cancelPhotoTouch = () => {
     photoTouchStartX.current = null;
+    photoTouchStartY.current = null;
+    photoTouchIsHorizontal.current = false;
     setPhotoSwipe(null);
   };
 
@@ -400,11 +406,28 @@ function App() {
 
   const handlePhotoTouchMove = (event: TouchEvent<HTMLDivElement>) => {
     if (photoTouchStartX.current === null) return;
+    if (photoTouchStartY.current === null) return;
 
     const currentX = event.touches[0]?.clientX;
+    const currentY = event.touches[0]?.clientY;
     if (typeof currentX !== "number") return;
+    if (typeof currentY !== "number") return;
 
-    updatePhotoSwipeProgress(currentX - photoTouchStartX.current);
+    const deltaX = currentX - photoTouchStartX.current;
+    const deltaY = currentY - photoTouchStartY.current;
+
+    if (
+      !photoTouchIsHorizontal.current &&
+      Math.abs(deltaX) > 10 &&
+      Math.abs(deltaX) > Math.abs(deltaY) * 1.1
+    ) {
+      photoTouchIsHorizontal.current = true;
+    }
+
+    if (!photoTouchIsHorizontal.current) return;
+
+    event.preventDefault();
+    updatePhotoSwipeProgress(deltaX);
   };
 
   const handlePhotoTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
@@ -417,9 +440,13 @@ function App() {
     }
 
     const deltaX = endX - photoTouchStartX.current;
+    const wasHorizontal = photoTouchIsHorizontal.current;
     photoTouchStartX.current = null;
+    photoTouchStartY.current = null;
+    photoTouchIsHorizontal.current = false;
     setPhotoSwipe(null);
 
+    if (!wasHorizontal) return;
     if (Math.abs(deltaX) < 42) return;
 
     if (deltaX < 0) {
