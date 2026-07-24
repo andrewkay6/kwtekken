@@ -39,24 +39,20 @@ const TWITCH_URL = "https://twitch.tv/kwtekken";
 const YOUTUBE_URL = "https://www.youtube.com/@KWTekken";
 const EMAIL_ADDRESS = "kwtekken@gmail.com";
 const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-3-2/details";
-const YOUTUBE_PLAYLIST_ID = "PLfv6rKhYEs1o";
+const YOUTUBE_PLAYLIST_ID = "PLD4rVJStCVLk";
 const LAST_YOUTUBE_VIDEO_KEY = "kwtekken:lastYoutubeVideoId";
 const YOUTUBE_PLAYLIST_VIDEO_IDS = [
-  "gfSw34paue8",
-  "_iqM0lNskP0",
-  "va8B2Ppm7Fo",
-  "HdsIXIbzhWU",
-  "svO0WMGC5ok",
-  "NlQIEfjDFXM",
-  "9jx1xx3V1ec",
-  "GkpklQ-7u70",
-  "w6S4DhSHKnU",
-  "SLQigl7qLZQ",
-  "0Ojs2OjN_3A",
-  "0VTtkYKWQbc",
-  "zOgg7ssRYog",
-  "UCKixTWXOM8",
-  "4O5vUHFzcl8",
+  "0Amm7JcSyM8",
+  "GFKks8FSnWw",
+  "SNpQNedj-s4",
+  "-MEZxE_kBsQ",
+  "6LqsWMf0www",
+  "OhbG-hwakUQ",
+  "BXtjyxcYMUs",
+  "83UIE4N0Tpg",
+  "xi2uPcu8ozs",
+  "jZd1GNKACDE",
+  "eyoVVFFTZgo",
 ];
 const SECTION_IDS: SectionId[] = ["top", "events", "photos"];
 const photoPlaceholders = [

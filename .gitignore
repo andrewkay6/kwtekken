@@ -7,3 +7,4 @@ vite.config.js
 .env.local
 *.log
 .DS_Store
+/startgg-assets/
