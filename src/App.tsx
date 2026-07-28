@@ -343,7 +343,7 @@ function App() {
     [feed.events],
   );
 
-  const youtubeEmbedSrc = `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?list=${YOUTUBE_PLAYLIST_ID}&rel=0`;
+  const youtubeEmbedSrc = `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?list=${YOUTUBE_PLAYLIST_ID}&rel=0&vq=hd1440&hd=1`;
   const emailCopyLabel =
     emailCopyState === "copied" ? "Copied to clipboard" : "Click to copy";
   const shouldShowUpcomingNotice = isTodayOrEarlier(feed.tournament.startAt);
