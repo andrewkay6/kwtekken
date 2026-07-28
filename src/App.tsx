@@ -12,6 +12,9 @@ type TournamentInfo = {
   city: string;
   region: string;
   countryCode: string;
+  embedTitle?: string | null;
+  embedDescription?: string | null;
+  embedImageUrl?: string | null;
 };
 
 type SceneEvent = {
@@ -39,7 +42,6 @@ const TWITCH_URL = "https://twitch.tv/kwtekken";
 const YOUTUBE_URL = "https://www.youtube.com/@KWTekken";
 const EMAIL_ADDRESS = "kwtekken@gmail.com";
 const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-4-2/details";
-const STARTGG_BANNER_URL = "/basement-brawl-banner.png";
 const YOUTUBE_PLAYLIST_ID = "PLD4rVJStCVLk";
 const LAST_YOUTUBE_VIDEO_KEY = "kwtekken:lastYoutubeVideoId";
 const YOUTUBE_PLAYLIST_VIDEO_IDS = [
@@ -96,6 +98,9 @@ const fallbackFeed: EventFeed = {
     city: "Waterloo",
     region: "ON",
     countryCode: "CA",
+    embedTitle: null,
+    embedDescription: null,
+    embedImageUrl: null,
   },
   events: [],
 };
@@ -676,22 +681,32 @@ function App() {
           </div>
         ) : (
           <a
-            className="event-feature startgg-embed"
+            className={`event-feature startgg-embed ${
+              feed.tournament.embedImageUrl ? "" : "startgg-embed-text-only"
+            }`}
             href={feed.sourceUrl || STARTGG_URL}
             {...externalLinkProps()}
           >
-            <img
-              alt={`${feed.tournament.name} banner`}
-              className="startgg-embed-image"
-              src={STARTGG_BANNER_URL}
-            />
+            {feed.tournament.embedImageUrl && (
+              <img
+                alt={`${feed.tournament.embedTitle || feed.tournament.name} preview`}
+                className="startgg-embed-image"
+                src={feed.tournament.embedImageUrl}
+              />
+            )}
             <div className="startgg-embed-body">
               <p className="startgg-domain">start.gg</p>
               <p className="event-date">{formatDate(feed.tournament.startAt)}</p>
-              <h3>{feed.tournament.name}</h3>
-              <p>
+              <p className="event-location">
                 {feed.tournament.city}
                 {feed.tournament.region ? `, ${feed.tournament.region}` : ""}
+              </p>
+              <h3>{feed.tournament.embedTitle || feed.tournament.name}</h3>
+              <p>
+                {feed.tournament.embedDescription ||
+                  `${feed.tournament.city}${
+                    feed.tournament.region ? `, ${feed.tournament.region}` : ""
+                  }`}
               </p>
               <span className="startgg-embed-action">View bracket details</span>
             </div>

@@ -406,6 +406,12 @@ h3 {
 .event-date {
   color: #f1b75a;
   font-weight: 800;
+  margin-bottom: 0.15rem;
+}
+
+.event-location {
+  color: #f1b75a;
+  font-weight: 800;
   margin-bottom: 0.65rem;
 }
 
@@ -435,6 +441,14 @@ h3 {
   display: grid;
   gap: 0.35rem;
   padding: 1rem;
+}
+
+.startgg-embed-text-only {
+  padding: 1rem;
+}
+
+.startgg-embed-text-only .startgg-embed-body {
+  padding: 0;
 }
 
 .startgg-embed h3 {
@@ -734,6 +748,14 @@ h3 {
 
   .startgg-embed-body {
     padding: 1.25rem;
+  }
+
+  .startgg-embed-text-only {
+    padding: 1.25rem;
+  }
+
+  .startgg-embed-text-only .startgg-embed-body {
+    padding: 0;
   }
 
   .button.compact {

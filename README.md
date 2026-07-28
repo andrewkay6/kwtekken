@@ -27,10 +27,10 @@ STARTGG_TOKEN=your_token npm run update:events
 
 For GitHub Pages, add a repository secret named `STARTGG_TOKEN`. The deploy workflow will refresh `public/events.json` before building. If no token is present, the workflow keeps the checked-in fallback event file and the site still builds.
 
-Defaults live in `.env.example`:
+The updater has checked-in defaults for the currently featured tournament. Override them only when refreshing a different event:
 
-- `STARTGG_TOURNAMENT_SLUG=tournament/basement-brawl-2-1`
-- `STARTGG_SOURCE_URL=https://www.start.gg/tournament/basement-brawl-2-1/details`
+- `STARTGG_TOURNAMENT_SLUG`
+- `STARTGG_SOURCE_URL`
 
 ## Deployment
 
