@@ -393,7 +393,9 @@ h3 {
   border: 1px solid rgba(248, 244, 235, 0.14);
   display: grid;
   gap: 1.25rem;
+  overflow: hidden;
   padding: 1rem;
+  position: relative;
 }
 
 .event-feature p:last-child {
@@ -405,6 +407,53 @@ h3 {
   color: #f1b75a;
   font-weight: 800;
   margin-bottom: 0.65rem;
+}
+
+.startgg-embed {
+  gap: 0;
+  padding: 0;
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.startgg-embed:hover,
+.startgg-embed:focus-visible {
+  border-color: rgba(126, 213, 215, 0.58);
+  transform: translateY(-1px);
+}
+
+.startgg-embed-image {
+  aspect-ratio: 3 / 1;
+  display: block;
+  height: auto;
+  object-fit: cover;
+  width: 100%;
+}
+
+.startgg-embed-body {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem;
+}
+
+.startgg-embed h3 {
+  font-size: clamp(1.55rem, 7vw, 2.45rem);
+}
+
+.startgg-domain {
+  color: rgba(248, 244, 235, 0.56);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.startgg-embed-action {
+  color: #7ed5d7;
+  font-weight: 900;
+  margin-top: 0.15rem;
 }
 
 .event-notice {
@@ -671,6 +720,19 @@ h3 {
   .event-feature {
     align-items: center;
     grid-template-columns: 1fr auto;
+    padding: 1.25rem;
+  }
+
+  .startgg-embed {
+    grid-template-columns: 1fr;
+    padding: 0;
+  }
+
+  .startgg-embed-image {
+    height: auto;
+  }
+
+  .startgg-embed-body {
     padding: 1.25rem;
   }
 

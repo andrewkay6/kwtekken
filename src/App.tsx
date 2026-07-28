@@ -38,7 +38,8 @@ const DISCORD_URL = "https://discord.gg/mCwGVgjXED";
 const TWITCH_URL = "https://twitch.tv/kwtekken";
 const YOUTUBE_URL = "https://www.youtube.com/@KWTekken";
 const EMAIL_ADDRESS = "kwtekken@gmail.com";
-const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-3-2/details";
+const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-4-2/details";
+const STARTGG_BANNER_URL = "/basement-brawl-banner.png";
 const YOUTUBE_PLAYLIST_ID = "PLD4rVJStCVLk";
 const LAST_YOUTUBE_VIDEO_KEY = "kwtekken:lastYoutubeVideoId";
 const YOUTUBE_PLAYLIST_VIDEO_IDS = [
@@ -87,9 +88,9 @@ const fallbackFeed: EventFeed = {
   sourceUrl: STARTGG_URL,
   generatedAt: null,
   tournament: {
-    name: "Basement Brawl 3",
-    slug: "tournament/basement-brawl-3-2",
-    startAt: 1784692800,
+    name: "Basement Brawl 4",
+    slug: "tournament/basement-brawl-4-2",
+    startAt: 1785902400,
     endAt: null,
     venueAddress: "247 King St N Unit 8 Basement Level, Waterloo, ON N2J 2Y8, Canada",
     city: "Waterloo",
@@ -674,23 +675,27 @@ function App() {
             </div>
           </div>
         ) : (
-          <div className="event-feature">
-            <div>
+          <a
+            className="event-feature startgg-embed"
+            href={feed.sourceUrl || STARTGG_URL}
+            {...externalLinkProps()}
+          >
+            <img
+              alt={`${feed.tournament.name} banner`}
+              className="startgg-embed-image"
+              src={STARTGG_BANNER_URL}
+            />
+            <div className="startgg-embed-body">
+              <p className="startgg-domain">start.gg</p>
               <p className="event-date">{formatDate(feed.tournament.startAt)}</p>
               <h3>{feed.tournament.name}</h3>
               <p>
                 {feed.tournament.city}
                 {feed.tournament.region ? `, ${feed.tournament.region}` : ""}
               </p>
+              <span className="startgg-embed-action">View bracket details</span>
             </div>
-            <a
-              className="button compact"
-              href={feed.sourceUrl || STARTGG_URL}
-              {...externalLinkProps()}
-            >
-              View on start.gg
-            </a>
-          </div>
+          </a>
         )}
 
         {sortedEvents.length > 0 && (
