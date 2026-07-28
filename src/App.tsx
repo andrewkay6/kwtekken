@@ -60,27 +60,27 @@ const YOUTUBE_PLAYLIST_VIDEO_IDS = [
 const SECTION_IDS: SectionId[] = ["top", "events", "photos"];
 const photoPlaceholders = [
   {
-    eventName: "Basement Brawl 2",
+    eventName: "KW Tekken local",
     caption: "June 24, 2026",
     src: "/event-photos/20260624_203608.webp",
   },
   {
-    eventName: "Basement Brawl 2",
+    eventName: "KW Tekken local",
     caption: "June 24, 2026",
     src: "/event-photos/20260624_203626.webp",
   },
   {
-    eventName: "Basement Brawl 3",
+    eventName: "KW Tekken local",
     caption: "July 8, 2026",
     src: "/event-photos/20260708_192104.webp",
   },
   {
-    eventName: "Basement Brawl 3",
+    eventName: "KW Tekken local",
     caption: "July 8, 2026",
     src: "/event-photos/20260708_192115.webp",
   },
   {
-    eventName: "Basement Brawl 3",
+    eventName: "KW Tekken local",
     caption: "July 8, 2026",
     src: "/event-photos/20260708_210208.webp",
   },

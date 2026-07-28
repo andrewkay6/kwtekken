@@ -34,8 +34,6 @@ jobs:
         run: npm run update:events
         env:
           STARTGG_TOKEN: ${{ secrets.STARTGG_TOKEN }}
-          STARTGG_TOURNAMENT_SLUG: tournament/basement-brawl-2-1
-          STARTGG_SOURCE_URL: https://www.start.gg/tournament/basement-brawl-2-1/details
 
       - name: Build
         run: npm run build
