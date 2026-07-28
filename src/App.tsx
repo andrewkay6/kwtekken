@@ -614,6 +614,9 @@ function App() {
                 allowFullScreen
               />
             </div>
+            <p className="video-quality-note">
+              Tip: choose 1440p in the player settings for the clearest video.
+            </p>
             <div className="video-actions">
               <a
                 className="button primary"

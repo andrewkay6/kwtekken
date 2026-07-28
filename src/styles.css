@@ -267,6 +267,13 @@ main {
   width: 100%;
 }
 
+.video-quality-note {
+  color: rgba(248, 244, 235, 0.48);
+  font-size: 0.62rem;
+  font-style: italic;
+  margin: -0.2rem 0 0;
+}
+
 .video-actions {
   display: grid;
   gap: 0.65rem;
