@@ -1,7 +1,7 @@
 import Lenis from "lenis";
 import Snap from "lenis/snap";
-import type { PointerEvent, TouchEvent } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { photoSections } from "./content/photos";
 
 type TournamentInfo = {
   name: string;
@@ -33,15 +33,15 @@ type EventFeed = {
   events: SceneEvent[];
 };
 
-type SectionId = "top" | "events" | "photos";
+type PageId = "home" | "photos";
+type SectionId = "top" | "events";
 type IconName = "discord" | "youtube" | "twitch" | "email";
-type SwipeDirection = "left" | "right";
 
 const DISCORD_URL = "https://discord.gg/mCwGVgjXED";
 const TWITCH_URL = "https://twitch.tv/kwtekken";
 const YOUTUBE_URL = "https://www.youtube.com/@KWTekken";
 const EMAIL_ADDRESS = "kwtekken@gmail.com";
-const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-4-2/details";
+const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-5-1/details";
 const YOUTUBE_PLAYLIST_ID = "PLD4rVJStCVLk";
 const LAST_YOUTUBE_VIDEO_KEY = "kwtekken:lastYoutubeVideoId";
 const YOUTUBE_PLAYLIST_VIDEO_IDS = [
@@ -57,50 +57,23 @@ const YOUTUBE_PLAYLIST_VIDEO_IDS = [
   "jZd1GNKACDE",
   "eyoVVFFTZgo",
 ];
-const SECTION_IDS: SectionId[] = ["top", "events", "photos"];
-const photoPlaceholders = [
-  {
-    eventName: "KW Tekken local",
-    caption: "June 24, 2026",
-    src: "/event-photos/20260624_203608.webp",
-  },
-  {
-    eventName: "KW Tekken local",
-    caption: "June 24, 2026",
-    src: "/event-photos/20260624_203626.webp",
-  },
-  {
-    eventName: "KW Tekken local",
-    caption: "July 8, 2026",
-    src: "/event-photos/20260708_192104.webp",
-  },
-  {
-    eventName: "KW Tekken local",
-    caption: "July 8, 2026",
-    src: "/event-photos/20260708_192115.webp",
-  },
-  {
-    eventName: "KW Tekken local",
-    caption: "July 8, 2026",
-    src: "/event-photos/20260708_210208.webp",
-  },
-];
+const SECTION_IDS: SectionId[] = ["top", "events"];
 
 const fallbackFeed: EventFeed = {
   sourceUrl: STARTGG_URL,
   generatedAt: null,
   tournament: {
-    name: "Basement Brawl 4",
-    slug: "tournament/basement-brawl-4-2",
-    startAt: 1785902400,
+    name: "Basement Brawl 5",
+    slug: "tournament/basement-brawl-5-1",
+    startAt: 1787112000,
     endAt: null,
     venueAddress: "247 King St N Unit 8 Basement Level, Waterloo, ON N2J 2Y8, Canada",
     city: "Waterloo",
     region: "ON",
     countryCode: "CA",
-    embedTitle: null,
-    embedDescription: null,
-    embedImageUrl: null,
+    embedTitle: "Basement Brawl #5",
+    embedDescription: "The best place for Basement Brawl #5 brackets, streams, standings and schedules all in one place!",
+    embedImageUrl: "https://images.start.gg/images/tournament/940557/image-36a70f435d9b612a0077caf0557f9616.png",
   },
   events: [],
 };
@@ -134,7 +107,6 @@ function isTodayOrEarlier(timestamp: number | null) {
 
   return timestamp * 1000 < tomorrow.getTime();
 }
-
 function isAfterToday(timestamp: number | null) {
   if (!timestamp) return true;
 
@@ -156,6 +128,10 @@ function externalLinkProps() {
     rel: "noreferrer",
     target: "_blank",
   };
+}
+
+function currentPageFromHash(): PageId {
+  return window.location.hash === "#photos" ? "photos" : "home";
 }
 
 function Icon({ name }: { name: IconName }) {
@@ -230,18 +206,10 @@ function App() {
   const [emailCopyState, setEmailCopyState] = useState<"idle" | "copied">(
     "idle",
   );
+  const [activePage, setActivePage] = useState<PageId>(currentPageFromHash);
   const [activeSection, setActiveSection] = useState<SectionId>("top");
-  const [activePhotoIndex, setActivePhotoIndex] = useState(2);
-  const [photoSwipe, setPhotoSwipe] = useState<{
-    direction: SwipeDirection;
-    progress: number;
-  } | null>(null);
+  const [previewPhotoUrl, setPreviewPhotoUrl] = useState<string | null>(null);
   const [youtubeVideoId] = useState(selectRandomYoutubeVideoId);
-  const photoTouchStartX = useRef<number | null>(null);
-  const photoTouchStartY = useRef<number | null>(null);
-  const photoTouchIsHorizontal = useRef(false);
-  const photoPointerStartX = useRef<number | null>(null);
-  const didDragPhoto = useRef(false);
 
   useEffect(() => {
     fetch("/events.json", { cache: "no-cache" })
@@ -262,6 +230,37 @@ function App() {
   }, [youtubeVideoId]);
 
   useEffect(() => {
+    if (!previewPhotoUrl) return;
+
+    const closePreview = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setPreviewPhotoUrl(null);
+      }
+    };
+
+    window.addEventListener("keydown", closePreview);
+
+    return () => {
+      window.removeEventListener("keydown", closePreview);
+    };
+  }, [previewPhotoUrl]);
+
+  useEffect(() => {
+    const updateActivePage = () => {
+      setActivePage(currentPageFromHash());
+    };
+
+    updateActivePage();
+    window.addEventListener("hashchange", updateActivePage);
+
+    return () => {
+      window.removeEventListener("hashchange", updateActivePage);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (activePage !== "home") return;
+
     const updateActiveSection = () => {
       let currentSection: SectionId = "top";
       const topbar = document.querySelector(".topbar");
@@ -293,9 +292,11 @@ function App() {
       window.removeEventListener("scroll", updateActiveSection);
       window.removeEventListener("resize", updateActiveSection);
     };
-  }, []);
+  }, [activePage]);
 
   useEffect(() => {
+    if (activePage !== "home") return;
+
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );
@@ -330,7 +331,7 @@ function App() {
       snap.destroy();
       lenis.destroy();
     };
-  }, []);
+  }, [activePage]);
 
   const sortedEvents = useMemo(
     () =>
@@ -357,195 +358,22 @@ function App() {
       setEmailCopyState("idle");
     }
   };
-  const getPhotoOffset = (index: number) => {
-    const photoCount = photoPlaceholders.length;
-    const forwardOffset = (index - activePhotoIndex + photoCount) % photoCount;
-
-    return forwardOffset > photoCount / 2
-      ? forwardOffset - photoCount
-      : forwardOffset;
-  };
-
-  const showPreviousPhoto = () => {
-    setActivePhotoIndex(
-      (currentIndex) =>
-        (currentIndex - 1 + photoPlaceholders.length) %
-        photoPlaceholders.length,
-    );
-  };
-
-  const showNextPhoto = () => {
-    setActivePhotoIndex(
-      (currentIndex) => (currentIndex + 1) % photoPlaceholders.length,
-    );
-  };
-
-  const handlePhotoTouchStart = (event: TouchEvent<HTMLDivElement>) => {
-    photoTouchStartX.current = event.touches[0]?.clientX ?? null;
-    photoTouchStartY.current = event.touches[0]?.clientY ?? null;
-    photoTouchIsHorizontal.current = false;
-    setPhotoSwipe(null);
-  };
-
-  const cancelPhotoTouch = () => {
-    photoTouchStartX.current = null;
-    photoTouchStartY.current = null;
-    photoTouchIsHorizontal.current = false;
-    setPhotoSwipe(null);
-  };
-
-  const updatePhotoSwipeProgress = (deltaX: number) => {
-    if (Math.abs(deltaX) < 8) {
-      setPhotoSwipe(null);
-      return;
-    }
-
-    setPhotoSwipe({
-      direction: deltaX < 0 ? "left" : "right",
-      progress: Math.min(Math.abs(deltaX) / 96, 1),
-    });
-  };
-
-  const handlePhotoTouchMove = (event: TouchEvent<HTMLDivElement>) => {
-    if (photoTouchStartX.current === null) return;
-    if (photoTouchStartY.current === null) return;
-
-    const currentX = event.touches[0]?.clientX;
-    const currentY = event.touches[0]?.clientY;
-    if (typeof currentX !== "number") return;
-    if (typeof currentY !== "number") return;
-
-    const deltaX = currentX - photoTouchStartX.current;
-    const deltaY = currentY - photoTouchStartY.current;
-
-    if (
-      !photoTouchIsHorizontal.current &&
-      Math.abs(deltaX) > 10 &&
-      Math.abs(deltaX) > Math.abs(deltaY) * 1.1
-    ) {
-      photoTouchIsHorizontal.current = true;
-    }
-
-    if (!photoTouchIsHorizontal.current) return;
-
-    event.preventDefault();
-    updatePhotoSwipeProgress(deltaX);
-  };
-
-  const handlePhotoTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
-    if (photoTouchStartX.current === null) return;
-
-    const endX = event.changedTouches[0]?.clientX;
-    if (typeof endX !== "number") {
-      cancelPhotoTouch();
-      return;
-    }
-
-    const deltaX = endX - photoTouchStartX.current;
-    const wasHorizontal = photoTouchIsHorizontal.current;
-    photoTouchStartX.current = null;
-    photoTouchStartY.current = null;
-    photoTouchIsHorizontal.current = false;
-    setPhotoSwipe(null);
-
-    if (!wasHorizontal) return;
-    if (Math.abs(deltaX) < 42) return;
-
-    if (deltaX < 0) {
-      showNextPhoto();
-      return;
-    }
-
-    showPreviousPhoto();
-  };
-
-  const handlePhotoPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === "touch") return;
-
-    event.currentTarget.setPointerCapture(event.pointerId);
-    photoPointerStartX.current = event.clientX;
-    didDragPhoto.current = false;
-    setPhotoSwipe(null);
-  };
-
-  const resetPhotoPointerPosition = () => {
-    photoPointerStartX.current = null;
-    setPhotoSwipe(null);
-  };
-
-  const cancelPhotoPointer = () => {
-    resetPhotoPointerPosition();
-    didDragPhoto.current = false;
-  };
-
-  const handlePhotoPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (photoPointerStartX.current === null) return;
-
-    const deltaX = event.clientX - photoPointerStartX.current;
-
-    updatePhotoSwipeProgress(deltaX);
-
-    if (Math.abs(deltaX) > 8) {
-      didDragPhoto.current = true;
-    }
-  };
-
-  const handlePhotoPointerUp = (event: PointerEvent<HTMLDivElement>) => {
-    if (photoPointerStartX.current === null) return;
-
-    const deltaX = event.clientX - photoPointerStartX.current;
-    photoPointerStartX.current = null;
-    setPhotoSwipe(null);
-
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-
-    if (Math.abs(deltaX) < 48) {
-      didDragPhoto.current = false;
-      const target =
-        document.elementFromPoint(event.clientX, event.clientY) ||
-        (event.target as HTMLElement);
-      const photoButton =
-        target.closest<HTMLButtonElement>("[data-photo-index]");
-      const photoIndex = Number(photoButton?.dataset.photoIndex);
-
-      if (Number.isInteger(photoIndex)) {
-        setActivePhotoIndex(photoIndex);
-      }
-
-      return;
-    }
-
-    if (deltaX < 0) {
-      showNextPhoto();
-      return;
-    }
-
-    showPreviousPhoto();
-  };
 
   return (
-    <main>
+    <main className={`page-${activePage}`}>
       <nav className="topbar" aria-label="Primary">
         <a className="wordmark" href="#top" aria-label="KW Tekken home">
           KW Tekken
         </a>
         <div className="page-links">
           <a
-            aria-current={activeSection === "top" ? "page" : undefined}
+            aria-current={activePage === "home" ? "page" : undefined}
             href="#top"
           >
-            Featured
+            Home
           </a>
           <a
-            aria-current={activeSection === "events" ? "page" : undefined}
-            href="#events"
-          >
-            Events
-          </a>
-          <a
-            aria-current={activeSection === "photos" ? "page" : undefined}
+            aria-current={activePage === "photos" ? "page" : undefined}
             href="#photos"
           >
             Photos
@@ -579,28 +407,24 @@ function App() {
         </div>
       </nav>
 
-      <nav className="section-dots" aria-label="Page sections">
-        <a
-          aria-label="Video section"
-          aria-current={activeSection === "top" ? "true" : undefined}
-          className={activeSection === "top" ? "active" : ""}
-          href="#top"
-        />
-        <a
-          aria-label="Events section"
-          aria-current={activeSection === "events" ? "true" : undefined}
-          className={activeSection === "events" ? "active" : ""}
-          href="#events"
-        />
-        <a
-          aria-label="Event photos section"
-          aria-current={activeSection === "photos" ? "true" : undefined}
-          className={activeSection === "photos" ? "active" : ""}
-          href="#photos"
-        />
-      </nav>
+      {activePage === "home" ? (
+        <>
+          <nav className="section-dots" aria-label="Home sections">
+            <a
+              aria-label="Video section"
+              aria-current={activeSection === "top" ? "true" : undefined}
+              className={activeSection === "top" ? "active" : ""}
+              href="#top"
+            />
+            <a
+              aria-label="Events section"
+              aria-current={activeSection === "events" ? "true" : undefined}
+              className={activeSection === "events" ? "active" : ""}
+              href="#events"
+            />
+          </nav>
 
-      <section className="hero snap-section" id="top" aria-labelledby="page-title">
+          <section className="hero snap-section" id="top" aria-labelledby="page-title">
         <div className="hero-grid">
           <section className="video-panel" aria-label="KW Tekken VOD playlist">
             <p className="section-label">Featured showcase</p>
@@ -651,12 +475,15 @@ function App() {
               <a className="button secondary" href="#events">
                 See events
               </a>
+              <a className="button secondary" href="#photos">
+                See photos
+              </a>
             </div>
           </div>
         </div>
-      </section>
+          </section>
 
-      <section className="section events-section snap-section" id="events">
+          <section className="section events-section snap-section" id="events">
         <div className="section-heading">
           <p className="section-label">From start.gg</p>
           <h2>Upcoming events</h2>
@@ -741,71 +568,84 @@ function App() {
             ))}
           </div>
         )}
-      </section>
-
-      <section className="section photos-section snap-section" id="photos">
-        <div className="section-heading">
-          <p className="section-label">From the venue</p>
-          <h2>Event photos</h2>
-        </div>
-
-        <div className="photo-carousel" aria-label="Event photo carousel">
-          <div
-            className="photo-stage"
-            onPointerDown={handlePhotoPointerDown}
-            onPointerCancel={cancelPhotoPointer}
-            onLostPointerCapture={resetPhotoPointerPosition}
-            onPointerMove={handlePhotoPointerMove}
-            onPointerUp={handlePhotoPointerUp}
-            onTouchCancel={cancelPhotoTouch}
-            onTouchEnd={handlePhotoTouchEnd}
-            onTouchMove={handlePhotoTouchMove}
-            onTouchStart={handlePhotoTouchStart}
-          >
-            {photoPlaceholders.map((gallery, index) => {
-              const offset = getPhotoOffset(index);
-
-              return (
-              <button
-                aria-label={`Show ${gallery.eventName} photo`}
-                className={`photo-card photo-card-${offset}`}
-                data-photo-index={index}
-                key={gallery.src}
-                onClick={() => {
-                  if (didDragPhoto.current) {
-                    didDragPhoto.current = false;
-                    return;
-                  }
-
-                  setActivePhotoIndex(index);
-                }}
-                type="button"
-              >
-                <img
-                  alt={`${gallery.eventName} event photo`}
-                  className="event-photo"
-                  draggable={false}
-                  loading="lazy"
-                  src={gallery.src}
-                />
-              </button>
-              );
-            })}
-            <div
-              aria-hidden="true"
-              className={`swipe-progress ${
-                photoSwipe ? `swipe-progress-${photoSwipe.direction}` : ""
-              }`}
-            >
-              <span
-                style={{
-                  transform: `scaleX(${photoSwipe?.progress ?? 0})`,
-                }}
-              />
-            </div>
+          </section>
+        </>
+      ) : (
+        <section className="section photos-section photos-page" id="photos">
+          <div className="section-heading">
+            <h1>Event photos</h1>
           </div>
+
+          {photoSections.map((section) => (
+            <section
+              aria-labelledby={`${section.id}-heading`}
+              className="photo-gallery-section"
+              key={section.id}
+            >
+              <div className="photo-gallery-heading">
+                <h2 id={`${section.id}-heading`}>{section.title}</h2>
+                {section.description && <p>{section.description}</p>}
+              </div>
+
+              <div
+                aria-label={`${section.title} photo gallery`}
+                className="photo-mosaic"
+              >
+                {section.photos.map((photo, index) => (
+                  <figure className="photo-tile" key={photo.id}>
+                    <button
+                      aria-label={`Preview ${section.title} photo ${index + 1}`}
+                      className="photo-preview-button"
+                      onClick={() => setPreviewPhotoUrl(photo.src)}
+                      type="button"
+                    >
+                      <img
+                        alt={photo.alt}
+                        className="event-photo"
+                        loading="lazy"
+                        src={photo.src}
+                      />
+                    </button>
+                    {photo.caption && <figcaption>{photo.caption}</figcaption>}
+                  </figure>
+                ))}
+              </div>
+            </section>
+          ))}
+        </section>
+      )}
+
+      {previewPhotoUrl && (
+        <div
+          aria-label="Photo preview"
+          aria-modal="true"
+          className="photo-preview"
+          onClick={() => setPreviewPhotoUrl(null)}
+          role="dialog"
+        >
+          <button
+            aria-label="Close photo preview"
+            className="photo-preview-close"
+            onClick={() => setPreviewPhotoUrl(null)}
+            type="button"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path
+                d="M6.75 6.75 17.25 17.25M17.25 6.75 6.75 17.25"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeWidth="2.4"
+              />
+            </svg>
+          </button>
+          <img
+            alt="Selected KW Tekken event photo"
+            onClick={(event) => event.stopPropagation()}
+            src={previewPhotoUrl}
+          />
         </div>
-      </section>
+      )}
 
     </main>
   );
