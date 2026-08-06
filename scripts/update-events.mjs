@@ -2,18 +2,22 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
 const STARTGG_API = "https://api.start.gg/gql/alpha";
-const TOURNAMENT_SLUG =
-  process.env.STARTGG_TOURNAMENT_SLUG || "tournament/basement-brawl-4-2";
-const SOURCE_URL =
-  process.env.STARTGG_SOURCE_URL ||
-  "https://www.start.gg/tournament/basement-brawl-4-2/details";
 const OUTFILE = resolve("public/events.json");
 
 const token = process.env.STARTGG_TOKEN;
+const currentFeed = JSON.parse(await readFile(OUTFILE, "utf8"));
+const SOURCE_URL =
+  process.env.STARTGG_SOURCE_URL ||
+  currentFeed.sourceUrl ||
+  "https://www.start.gg/tournament/basement-brawl-5-1/details";
+const TOURNAMENT_SLUG =
+  process.env.STARTGG_TOURNAMENT_SLUG ||
+  currentFeed.tournament?.slug ||
+  extractTournamentSlug(SOURCE_URL) ||
+  "tournament/basement-brawl-5-1";
 const embed = await fetchStartggEmbed(SOURCE_URL);
 
 if (!token) {
-  const currentFeed = JSON.parse(await readFile(OUTFILE, "utf8"));
   currentFeed.generatedAt = new Date().toISOString();
   currentFeed.sourceUrl = SOURCE_URL;
   currentFeed.tournament = {
@@ -111,6 +115,11 @@ if (!token) {
   };
 
   await writeEventsFeed(feed, events.length);
+}
+
+function extractTournamentSlug(url) {
+  const match = url.match(/start\.gg\/(tournament\/[^/?#]+)/i);
+  return match ? match[1] : null;
 }
 
 async function fetchStartggEmbed(url) {
