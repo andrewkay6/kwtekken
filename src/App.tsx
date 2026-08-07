@@ -42,20 +42,28 @@ const TWITCH_URL = "https://twitch.tv/kwtekken";
 const YOUTUBE_URL = "https://www.youtube.com/@KWTekken";
 const EMAIL_ADDRESS = "kwtekken@gmail.com";
 const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-5-1/details";
-const YOUTUBE_PLAYLIST_ID = "PLD4rVJStCVLk";
+const YOUTUBE_PLAYLIST_ID = "PLA7pR9RuktGQ";
 const LAST_YOUTUBE_VIDEO_KEY = "kwtekken:lastYoutubeVideoId";
 const YOUTUBE_PLAYLIST_VIDEO_IDS = [
-  "0Amm7JcSyM8",
-  "GFKks8FSnWw",
-  "SNpQNedj-s4",
-  "-MEZxE_kBsQ",
-  "6LqsWMf0www",
-  "OhbG-hwakUQ",
-  "BXtjyxcYMUs",
-  "83UIE4N0Tpg",
-  "xi2uPcu8ozs",
-  "jZd1GNKACDE",
-  "eyoVVFFTZgo",
+  "9-oWrhCUDbI",
+  "dTeltO9MfbQ",
+  "WBTJfGx7QLk",
+  "NABSpY86-44",
+  "jAYsMThM0jc",
+  "JvOyHHWQfXs",
+  "jJw47TJDDGk",
+  "emyEqmpl9GE",
+  "pnSbOwKDDxk",
+  "kDTofB5xiK4",
+  "9jSkt4Yx2gg",
+  "QE1PXiTMwnA",
+  "FTm05tyK9PU",
+  "q9mro1IjQ4s",
+  "dtY7k0c5aTc",
+  "tWVrhWbvza0",
+  "_KXt21vhXxA",
+  "IIw4xKfmuK8",
+  "bwZPfF4NwJM",
 ];
 const SECTION_IDS: SectionId[] = ["top", "events"];
 
