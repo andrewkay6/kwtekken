@@ -9,12 +9,12 @@ const currentFeed = JSON.parse(await readFile(OUTFILE, "utf8"));
 const SOURCE_URL =
   process.env.STARTGG_SOURCE_URL ||
   currentFeed.sourceUrl ||
-  "https://www.start.gg/tournament/basement-brawl-5-1/details";
+  "https://www.start.gg/tournament/basement-brawl-6/details";
 const TOURNAMENT_SLUG =
   process.env.STARTGG_TOURNAMENT_SLUG ||
   currentFeed.tournament?.slug ||
   extractTournamentSlug(SOURCE_URL) ||
-  "tournament/basement-brawl-5-1";
+  "tournament/basement-brawl-6";
 const embed = await fetchStartggEmbed(SOURCE_URL);
 
 if (!token) {

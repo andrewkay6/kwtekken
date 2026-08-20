@@ -41,29 +41,21 @@ const DISCORD_URL = "https://discord.gg/mCwGVgjXED";
 const TWITCH_URL = "https://twitch.tv/kwtekken";
 const YOUTUBE_URL = "https://www.youtube.com/@KWTekken";
 const EMAIL_ADDRESS = "kwtekken@gmail.com";
-const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-5-1/details";
-const YOUTUBE_PLAYLIST_ID = "PLA7pR9RuktGQ";
+const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-6/details";
+const YOUTUBE_PLAYLIST_ID = "PLDAAfT8Z4LWE";
 const LAST_YOUTUBE_VIDEO_KEY = "kwtekken:lastYoutubeVideoId";
 const YOUTUBE_PLAYLIST_VIDEO_IDS = [
-  "9-oWrhCUDbI",
-  "dTeltO9MfbQ",
-  "WBTJfGx7QLk",
-  "NABSpY86-44",
-  "jAYsMThM0jc",
-  "JvOyHHWQfXs",
-  "jJw47TJDDGk",
-  "emyEqmpl9GE",
-  "pnSbOwKDDxk",
-  "kDTofB5xiK4",
-  "9jSkt4Yx2gg",
-  "QE1PXiTMwnA",
-  "FTm05tyK9PU",
-  "q9mro1IjQ4s",
-  "dtY7k0c5aTc",
-  "tWVrhWbvza0",
-  "_KXt21vhXxA",
-  "IIw4xKfmuK8",
-  "bwZPfF4NwJM",
+  "LTetfWzTCRc",
+  "4EdMhx9jPL4",
+  "E7NHoRzmrVE",
+  "ThBFHWY6RSo",
+  "9-CtY5nL5Yk",
+  "khgfhKFwtqM",
+  "IitiFh54SWo",
+  "Uqk_7hILfvg",
+  "i_y8Db3kNuY",
+  "-gXNAs8Uuxg",
+  "AcGbfUN1gTA",
 ];
 const SECTION_IDS: SectionId[] = ["top", "events"];
 
@@ -71,17 +63,14 @@ const fallbackFeed: EventFeed = {
   sourceUrl: STARTGG_URL,
   generatedAt: null,
   tournament: {
-    name: "Basement Brawl 5",
-    slug: "tournament/basement-brawl-5-1",
-    startAt: 1787112000,
+    name: "Basement Brawl 6",
+    slug: "tournament/basement-brawl-6",
+    startAt: 1788321600,
     endAt: null,
-    venueAddress: "247 King St N Unit 8 Basement Level, Waterloo, ON N2J 2Y8, Canada",
+    venueAddress: "",
     city: "Waterloo",
     region: "ON",
     countryCode: "CA",
-    embedTitle: "Basement Brawl #5",
-    embedDescription: "The best place for Basement Brawl #5 brackets, streams, standings and schedules all in one place!",
-    embedImageUrl: "https://images.start.gg/images/tournament/940557/image-36a70f435d9b612a0077caf0557f9616.png",
   },
   events: [],
 };

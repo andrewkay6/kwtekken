@@ -1,18 +1,18 @@
 {
-  "sourceUrl": "https://www.start.gg/tournament/basement-brawl-5-1/details",
-  "generatedAt": "2026-08-06T19:33:32.131Z",
+  "sourceUrl": "https://www.start.gg/tournament/basement-brawl-6/details",
+  "generatedAt": "2026-08-20T17:17:34.059Z",
   "tournament": {
-    "name": "Basement Brawl 5",
-    "slug": "tournament/basement-brawl-5-1",
-    "startAt": 1787112000,
+    "name": "Basement Brawl 6",
+    "slug": "tournament/basement-brawl-6",
+    "startAt": 1788321600,
     "endAt": null,
-    "venueAddress": "247 King St N Unit 8 Basement Level, Waterloo, ON N2J 2Y8, Canada",
+    "venueAddress": "",
     "city": "Waterloo",
     "region": "ON",
     "countryCode": "CA",
-    "embedTitle": "Basement Brawl #5",
-    "embedDescription": "The best place for Basement Brawl #5 brackets, streams, standings and schedules all in one place!",
-    "embedImageUrl": "https://images.start.gg/images/tournament/940557/image-36a70f435d9b612a0077caf0557f9616.png"
+    "embedTitle": "Basement Brawl #6",
+    "embedDescription": "The best place for Basement Brawl #6 brackets, streams, standings and schedules all in one place!",
+    "embedImageUrl": "https://images.start.gg/images/tournament/944933/image-bf7ac4f88ebc45eafa34799252cddcea.png"
   },
   "events": []
 }
