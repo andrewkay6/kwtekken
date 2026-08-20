@@ -45,8 +45,8 @@ const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-6/details";
 const YOUTUBE_PLAYLIST_ID = "PLDAAfT8Z4LWE";
 const LAST_YOUTUBE_VIDEO_KEY = "kwtekken:lastYoutubeVideoId";
 const YOUTUBE_PLAYLIST_VIDEO_IDS = [
-  "LTetfWzTCRc",
   "4EdMhx9jPL4",
+  "LTetfWzTCRc",
   "E7NHoRzmrVE",
   "ThBFHWY6RSo",
   "9-CtY5nL5Yk",
@@ -56,6 +56,7 @@ const YOUTUBE_PLAYLIST_VIDEO_IDS = [
   "i_y8Db3kNuY",
   "-gXNAs8Uuxg",
   "AcGbfUN1gTA",
+  "58_t7LLUWPg",
 ];
 const SECTION_IDS: SectionId[] = ["top", "events"];
 
