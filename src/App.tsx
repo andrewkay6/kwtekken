@@ -41,35 +41,21 @@ const DISCORD_URL = "https://discord.gg/mCwGVgjXED";
 const TWITCH_URL = "https://twitch.tv/kwtekken";
 const YOUTUBE_URL = "https://www.youtube.com/@KWTekken";
 const EMAIL_ADDRESS = "kwtekken@gmail.com";
-const STARTGG_URL = "https://www.start.gg/tournament/basement-brawl-6/details";
-const YOUTUBE_PLAYLIST_ID = "PLDAAfT8Z4LWE";
-const LAST_YOUTUBE_VIDEO_KEY = "kwtekken:lastYoutubeVideoId";
-const YOUTUBE_PLAYLIST_VIDEO_IDS = [
-  "4EdMhx9jPL4",
-  "LTetfWzTCRc",
-  "E7NHoRzmrVE",
-  "ThBFHWY6RSo",
-  "9-CtY5nL5Yk",
-  "khgfhKFwtqM",
-  "IitiFh54SWo",
-  "Uqk_7hILfvg",
-  "i_y8Db3kNuY",
-  "-gXNAs8Uuxg",
-  "AcGbfUN1gTA",
-  "58_t7LLUWPg",
-];
+const STARTGG_URL =
+  "https://www.start.gg/tournament/basement-brawl-8-caf-edition/details";
+const YOUTUBE_PLAYLIST_ID = "PLHdLp0TK5KEQ";
 const SECTION_IDS: SectionId[] = ["top", "events"];
 
 const fallbackFeed: EventFeed = {
   sourceUrl: STARTGG_URL,
   generatedAt: null,
   tournament: {
-    name: "Basement Brawl 6",
-    slug: "tournament/basement-brawl-6",
-    startAt: 1788321600,
+    name: "Basement Brawl 8: CAF Edition",
+    slug: "tournament/basement-brawl-8-caf-edition",
+    startAt: 1790827200,
     endAt: null,
-    venueAddress: "",
-    city: "Waterloo",
+    venueAddress: "17 Benton St, Kitchener, ON N2G 1V8, Canada",
+    city: "Kitchener",
     region: "ON",
     countryCode: "CA",
   },
@@ -169,19 +155,6 @@ function Icon({ name }: { name: IconName }) {
   );
 }
 
-function selectRandomYoutubeVideoId() {
-  const lastVideoId =
-    typeof window === "undefined"
-      ? null
-      : window.localStorage.getItem(LAST_YOUTUBE_VIDEO_KEY);
-  const candidateVideos =
-    YOUTUBE_PLAYLIST_VIDEO_IDS.length > 1
-      ? YOUTUBE_PLAYLIST_VIDEO_IDS.filter((videoId) => videoId !== lastVideoId)
-      : YOUTUBE_PLAYLIST_VIDEO_IDS;
-
-  return candidateVideos[Math.floor(Math.random() * candidateVideos.length)];
-}
-
 async function writeClipboardText(text: string) {
   if (window.navigator.clipboard) {
     await window.navigator.clipboard.writeText(text);
@@ -207,7 +180,6 @@ function App() {
   const [activePage, setActivePage] = useState<PageId>(currentPageFromHash);
   const [activeSection, setActiveSection] = useState<SectionId>("top");
   const [previewPhotoUrl, setPreviewPhotoUrl] = useState<string | null>(null);
-  const [youtubeVideoId] = useState(selectRandomYoutubeVideoId);
 
   useEffect(() => {
     fetch("/events.json", { cache: "no-cache" })
@@ -222,10 +194,6 @@ function App() {
         setFeed(fallbackFeed);
       });
   }, []);
-
-  useEffect(() => {
-    window.localStorage.setItem(LAST_YOUTUBE_VIDEO_KEY, youtubeVideoId);
-  }, [youtubeVideoId]);
 
   useEffect(() => {
     if (!previewPhotoUrl) return;
@@ -342,7 +310,7 @@ function App() {
     [feed.events],
   );
 
-  const youtubeEmbedSrc = `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?list=${YOUTUBE_PLAYLIST_ID}&rel=0&vq=hd1440&hd=1`;
+  const youtubeEmbedSrc = `https://www.youtube-nocookie.com/embed/videoseries?list=${YOUTUBE_PLAYLIST_ID}&rel=0&vq=hd1440&hd=1`;
   const emailCopyLabel =
     emailCopyState === "copied" ? "Copied to clipboard" : "Click to copy";
   const shouldShowUpcomingNotice = isTodayOrEarlier(feed.tournament.startAt);
@@ -429,7 +397,7 @@ function App() {
             <h2>Tournament footage</h2>
             <div className="video-frame">
               <iframe
-                key={youtubeVideoId}
+                key={YOUTUBE_PLAYLIST_ID}
                 title="KW Tekken VOD"
                 src={youtubeEmbedSrc}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -526,8 +494,10 @@ function App() {
               <p className="startgg-domain">start.gg</p>
               <p className="event-date">{formatDate(feed.tournament.startAt)}</p>
               <p className="event-location">
-                {feed.tournament.city}
-                {feed.tournament.region ? `, ${feed.tournament.region}` : ""}
+                {feed.tournament.venueAddress ||
+                  `${feed.tournament.city}${
+                    feed.tournament.region ? `, ${feed.tournament.region}` : ""
+                  }`}
               </p>
               <h3>{feed.tournament.embedTitle || feed.tournament.name}</h3>
               <p>

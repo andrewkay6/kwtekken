@@ -9,12 +9,16 @@ const currentFeed = JSON.parse(await readFile(OUTFILE, "utf8"));
 const SOURCE_URL =
   process.env.STARTGG_SOURCE_URL ||
   currentFeed.sourceUrl ||
-  "https://www.start.gg/tournament/basement-brawl-6/details";
+  "https://www.start.gg/tournament/basement-brawl-8-caf-edition/details";
 const TOURNAMENT_SLUG =
   process.env.STARTGG_TOURNAMENT_SLUG ||
   currentFeed.tournament?.slug ||
   extractTournamentSlug(SOURCE_URL) ||
-  "tournament/basement-brawl-6";
+  "tournament/basement-brawl-8-caf-edition";
+const currentTournament = currentFeed.tournament || {};
+const shouldPreserveCheckedInDetails =
+  currentTournament.slug === TOURNAMENT_SLUG ||
+  currentFeed.sourceUrl === SOURCE_URL;
 const embed = await fetchStartggEmbed(SOURCE_URL);
 
 if (!token) {
@@ -101,11 +105,23 @@ if (!token) {
     tournament: {
       name: tournament.name,
       slug: tournament.slug || TOURNAMENT_SLUG,
-      startAt: tournament.startAt ?? null,
+      startAt:
+        shouldPreserveCheckedInDetails && currentTournament.startAt
+          ? currentTournament.startAt
+          : tournament.startAt ?? null,
       endAt: tournament.endAt ?? null,
-      venueAddress: tournament.venueAddress || "",
-      city: tournament.city || "Kitchener-Waterloo",
-      region: tournament.addrState || "ON",
+      venueAddress:
+        shouldPreserveCheckedInDetails && currentTournament.venueAddress
+          ? currentTournament.venueAddress
+          : tournament.venueAddress || "",
+      city:
+        shouldPreserveCheckedInDetails && currentTournament.city
+          ? currentTournament.city
+          : tournament.city || "Kitchener-Waterloo",
+      region:
+        shouldPreserveCheckedInDetails && currentTournament.region
+          ? currentTournament.region
+          : tournament.addrState || "ON",
       countryCode: tournament.countryCode || "CA",
       embedTitle: embed.embedTitle,
       embedDescription: embed.embedDescription,
