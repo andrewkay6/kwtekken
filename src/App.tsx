@@ -44,6 +44,19 @@ const EMAIL_ADDRESS = "kwtekken@gmail.com";
 const STARTGG_URL =
   "https://www.start.gg/tournament/basement-brawl-8-caf-edition/details";
 const YOUTUBE_PLAYLIST_ID = "PLHdLp0TK5KEQ";
+const LAST_YOUTUBE_VIDEO_KEY = "kwtekken:lastYoutubeVideoId";
+const YOUTUBE_PLAYLIST_VIDEO_IDS = [
+  "4KR_apwvtVs",
+  "FuFk19cPv1c",
+  "0_meq_y_W1Y",
+  "k2TmCIcstc0",
+  "0WHBP8k2-oc",
+  "4abqzZMtxLA",
+  "j-ri-FbKnhU",
+  "hbzl9n2kuks",
+  "0AuvK3xm-aw",
+  "W_rDl7ZWvuQ",
+];
 const SECTION_IDS: SectionId[] = ["top", "events"];
 
 const fallbackFeed: EventFeed = {
@@ -155,6 +168,19 @@ function Icon({ name }: { name: IconName }) {
   );
 }
 
+function selectRandomYoutubeVideoId() {
+  const lastVideoId =
+    typeof window === "undefined"
+      ? null
+      : window.localStorage.getItem(LAST_YOUTUBE_VIDEO_KEY);
+  const candidateVideos =
+    YOUTUBE_PLAYLIST_VIDEO_IDS.length > 1
+      ? YOUTUBE_PLAYLIST_VIDEO_IDS.filter((videoId) => videoId !== lastVideoId)
+      : YOUTUBE_PLAYLIST_VIDEO_IDS;
+
+  return candidateVideos[Math.floor(Math.random() * candidateVideos.length)];
+}
+
 async function writeClipboardText(text: string) {
   if (window.navigator.clipboard) {
     await window.navigator.clipboard.writeText(text);
@@ -180,6 +206,7 @@ function App() {
   const [activePage, setActivePage] = useState<PageId>(currentPageFromHash);
   const [activeSection, setActiveSection] = useState<SectionId>("top");
   const [previewPhotoUrl, setPreviewPhotoUrl] = useState<string | null>(null);
+  const [youtubeVideoId] = useState(selectRandomYoutubeVideoId);
 
   useEffect(() => {
     fetch("/events.json", { cache: "no-cache" })
@@ -194,6 +221,10 @@ function App() {
         setFeed(fallbackFeed);
       });
   }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(LAST_YOUTUBE_VIDEO_KEY, youtubeVideoId);
+  }, [youtubeVideoId]);
 
   useEffect(() => {
     if (!previewPhotoUrl) return;
@@ -310,7 +341,7 @@ function App() {
     [feed.events],
   );
 
-  const youtubeEmbedSrc = `https://www.youtube-nocookie.com/embed/videoseries?list=${YOUTUBE_PLAYLIST_ID}&rel=0&vq=hd1440&hd=1`;
+  const youtubeEmbedSrc = `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?list=${YOUTUBE_PLAYLIST_ID}&rel=0&vq=hd1440&hd=1`;
   const emailCopyLabel =
     emailCopyState === "copied" ? "Copied to clipboard" : "Click to copy";
   const shouldShowUpcomingNotice = isTodayOrEarlier(feed.tournament.startAt);
@@ -397,7 +428,7 @@ function App() {
             <h2>Tournament footage</h2>
             <div className="video-frame">
               <iframe
-                key={YOUTUBE_PLAYLIST_ID}
+                key={youtubeVideoId}
                 title="KW Tekken VOD"
                 src={youtubeEmbedSrc}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

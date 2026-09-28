@@ -47,7 +47,8 @@ If the user gives a new location, make sure `city` matches the actual municipali
 The homepage embeds the featured playlist in `src/App.tsx`.
 
 - Update `YOUTUBE_PLAYLIST_ID`.
-- Prefer the `videoseries` embed URL when only a playlist URL is provided:
+- Use an explicit `YOUTUBE_PLAYLIST_VIDEO_IDS` list when the homepage should shuffle videos. Choose one video ID at random and include `list=${YOUTUBE_PLAYLIST_ID}` in the embed URL so playback keeps the playlist context.
+- The `videoseries` embed URL starts from the same playlist item each time, so avoid it when the user expects shuffle behavior:
   `https://www.youtube-nocookie.com/embed/videoseries?list=${YOUTUBE_PLAYLIST_ID}&rel=0&vq=hd1440&hd=1`
 - Do not keep stale individual video IDs from an older playlist unless the user explicitly provides the new video IDs.
 - If the embedded player says playback on other websites is disabled, do not work around it in code unless asked. The video owner needs to enable YouTube Studio's per-video `Allow embedding` setting for each public video in the playlist.
