@@ -9,12 +9,12 @@ const currentFeed = JSON.parse(await readFile(OUTFILE, "utf8"));
 const SOURCE_URL =
   process.env.STARTGG_SOURCE_URL ||
   currentFeed.sourceUrl ||
-  "https://www.start.gg/tournament/basement-brawl-8-caf-edition/details";
+  "https://www.start.gg/tournament/basement-brawl-9-caf-edition-pre-pre-clash-clash/details";
 const TOURNAMENT_SLUG =
   process.env.STARTGG_TOURNAMENT_SLUG ||
   currentFeed.tournament?.slug ||
   extractTournamentSlug(SOURCE_URL) ||
-  "tournament/basement-brawl-8-caf-edition";
+  "tournament/basement-brawl-9-caf-edition-pre-pre-clash-clash";
 const currentTournament = currentFeed.tournament || {};
 const shouldPreserveCheckedInDetails =
   currentTournament.slug === TOURNAMENT_SLUG ||

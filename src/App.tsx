@@ -42,20 +42,19 @@ const TWITCH_URL = "https://twitch.tv/kwtekken";
 const YOUTUBE_URL = "https://www.youtube.com/@KWTekken";
 const EMAIL_ADDRESS = "kwtekken@gmail.com";
 const STARTGG_URL =
-  "https://www.start.gg/tournament/basement-brawl-8-caf-edition/details";
-const YOUTUBE_PLAYLIST_ID = "PLHdLp0TK5KEQ";
+  "https://www.start.gg/tournament/basement-brawl-9-caf-edition-pre-pre-clash-clash/details";
+const YOUTUBE_PLAYLIST_ID = "PLSUqpdkh-18I";
 const LAST_YOUTUBE_VIDEO_KEY = "kwtekken:lastYoutubeVideoId";
 const YOUTUBE_PLAYLIST_VIDEO_IDS = [
-  "4KR_apwvtVs",
-  "FuFk19cPv1c",
-  "0_meq_y_W1Y",
-  "k2TmCIcstc0",
-  "0WHBP8k2-oc",
-  "4abqzZMtxLA",
-  "j-ri-FbKnhU",
-  "hbzl9n2kuks",
-  "0AuvK3xm-aw",
-  "W_rDl7ZWvuQ",
+  "oxq3G09T900",
+  "2-gETroP1iw",
+  "0_lzrH5Nako",
+  "FnQ8M63Krbs",
+  "0pAwbhGkzic",
+  "Q9RAnM5_lmQ",
+  "7jq4wprFGQk",
+  "S_YM0BMqtjk",
+  "_uO7d4ZrlHI",
 ];
 const SECTION_IDS: SectionId[] = ["top", "events"];
 
@@ -63,9 +62,9 @@ const fallbackFeed: EventFeed = {
   sourceUrl: STARTGG_URL,
   generatedAt: null,
   tournament: {
-    name: "Basement Brawl 8: CAF Edition",
-    slug: "tournament/basement-brawl-8-caf-edition",
-    startAt: 1790827200,
+    name: "Basement Brawl 9: CAFÉ Edition - Pre-Pre-Clash Clash",
+    slug: "tournament/basement-brawl-9-caf-edition-pre-pre-clash-clash",
+    startAt: 1792627200,
     endAt: null,
     venueAddress: "17 Benton St, Kitchener, ON N2G 1V8, Canada",
     city: "Kitchener",
