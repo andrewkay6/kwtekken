@@ -423,7 +423,6 @@ function App() {
           <section className="hero snap-section" id="top" aria-labelledby="page-title">
         <div className="hero-grid">
           <section className="video-panel" aria-label="KW Tekken VOD playlist">
-            <p className="section-label">Featured showcase</p>
             <h2>Tournament footage</h2>
             <div className="video-frame">
               <iframe
@@ -481,15 +480,12 @@ function App() {
 
           <section className="section events-section snap-section" id="events">
         <div className="section-heading">
-          <p className="section-label">From start.gg</p>
           <h2>Upcoming events</h2>
-          <p>Current brackets and registration live on start.gg.</p>
         </div>
 
         {shouldShowUpcomingNotice ? (
           <div className="event-feature">
             <div>
-              <p className="event-date">More events soon</p>
               <h3>Stay tuned for upcoming event announcements.</h3>
               <p>
                 Join the{" "}
