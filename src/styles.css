@@ -399,7 +399,7 @@ h3 {
   margin-bottom: 1.15rem;
 }
 
-.events-section .section-heading,
+.events-section > *,
 .photos-section .section-heading {
   justify-self: center;
   max-width: 58rem;
@@ -436,10 +436,7 @@ h3 {
 
 .startgg-embed {
   gap: 0;
-  justify-self: center;
-  max-width: 58rem;
   padding: 0;
-  width: 100%;
   transition:
     border-color 180ms ease,
     transform 180ms ease;
