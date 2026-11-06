@@ -8,5 +8,5 @@ vite.config.js
 *.log
 .DS_Store
 /startgg-assets/
-/.qwen/
-/.codex/
+.qwen/
+.codex/
