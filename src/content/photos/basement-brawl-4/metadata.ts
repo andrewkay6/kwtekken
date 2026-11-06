@@ -4,7 +4,7 @@ const metadata = {
   id: "basement-brawl-4",
   title: "Basement Brawl 4",
   description: "August 5, 2026",
-  order: 10,
+  order: 5,
   photos: [
     {
       file: "dsc_0066.webp",
