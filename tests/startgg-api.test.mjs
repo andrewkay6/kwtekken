@@ -30,7 +30,7 @@ async function expectError(promise, pattern) {
 
 describe("fetchCurrentUserId", () => {
   it("returns the owner id and sends the bearer token", async () => {
-    const fetchImpl = createStartggFetch({ currentUser: { currentUser: { id: 777, username: "kwtekken" } } });
+    const fetchImpl = createStartggFetch({ currentUser: { currentUser: { id: 777 } } });
 
     assert.equal(await fetchCurrentUserId({ fetchImpl, token: TOKEN }), 777);
     assert.equal(fetchImpl.header("Authorization"), `Bearer ${TOKEN}`);
@@ -77,11 +77,11 @@ describe("fetchOwnerTournaments", () => {
             { id: 1, slug: "tournament/a", startAt: 100 },
             { id: 2, slug: "tournament/b", startAt: 90 },
           ],
-          pageInfo: { total: 3, page: 1, pageCount: 2 },
+          pageInfo: { total: 3, page: 1, totalPages: 2 },
         },
         {
           nodes: [{ id: 3, slug: "tournament/c", startAt: 80 }],
-          pageInfo: { total: 3, page: 2, pageCount: 2 },
+          pageInfo: { total: 3, page: 2, totalPages: 2 },
         },
         { nodes: [{ id: 99, slug: "tournament/never-fetched", startAt: 1 }] },
       ],

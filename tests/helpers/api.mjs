@@ -33,7 +33,7 @@ function operationOf(query) {
  * "TournamentEvents" and "embed".
  */
 export function createStartggFetch({
-  currentUser = { currentUser: { id: 4242, username: "kwtekken" } },
+  currentUser = { currentUser: { id: 4242 } },
   tournamentPages = [],
   details = null,
   embedHtml = EMBED_HTML,

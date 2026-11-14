@@ -149,8 +149,8 @@ describe("update-events: discovery", () => {
     const next = upcoming("tournament/basement-brawl-12");
     const fetchImpl = createStartggFetch({
       tournamentPages: [
-        { nodes: [ownedTournament({ slug: "tournament/a", startAt: hoursFromNow(-24 * 40) })], pageInfo: { pageCount: 2 } },
-        { nodes: [next], pageInfo: { pageCount: 2 } },
+        { nodes: [ownedTournament({ slug: "tournament/a", startAt: hoursFromNow(-24 * 40) })], pageInfo: { totalPages: 2 } },
+        { nodes: [next], pageInfo: { totalPages: 2 } },
       ],
       details: tournamentDetails({ slug: next.slug }),
     });

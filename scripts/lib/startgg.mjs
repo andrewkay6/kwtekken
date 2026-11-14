@@ -20,7 +20,6 @@ const CURRENT_USER_QUERY = /* GraphQL */ `
   query CurrentUser {
     currentUser {
       id
-      username
     }
   }
 `;
@@ -49,7 +48,7 @@ const OWNER_TOURNAMENTS_QUERY = /* GraphQL */ `
       pageInfo {
         total
         page
-        pageCount
+        totalPages
       }
     }
   }
@@ -249,7 +248,7 @@ export async function fetchCurrentUserId({ fetchImpl, token } = {}) {
 }
 
 function declaredPageCount(pageInfo, perPage) {
-  const declared = numOrNull(pageInfo?.pageCount ?? pageInfo?.numTotalPages ?? pageInfo?.totalPages ?? null);
+  const declared = numOrNull(pageInfo?.totalPages ?? null);
 
   if (declared !== null && declared > 0) return declared;
 
