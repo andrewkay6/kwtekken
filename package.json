@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "update:events": "node scripts/update-events.mjs"
+    "update": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/update-all.mjs",
+    "update:events": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/update-events.mjs",
+    "update:videos": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/update-videos.mjs",
+    "check:live": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/live-check.mjs",
+    "test": "node --test"
   },
   "dependencies": {
     "lenis": "^1.3.25",

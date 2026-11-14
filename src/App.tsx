@@ -1,6 +1,8 @@
 import Lenis from "lenis";
 import Snap from "lenis/snap";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import eventsJson from "../public/events.json";
+import videosJson from "../public/videos.json";
 import { photoSections } from "./content/photos";
 
 type TournamentInfo = {
@@ -33,6 +35,20 @@ type EventFeed = {
   events: SceneEvent[];
 };
 
+type EventsFile = {
+  sourceUrl?: string | null;
+  generatedAt?: string | null;
+  tournament?: Partial<TournamentInfo> | null;
+  events?: SceneEvent[] | null;
+};
+
+type VideosFile = {
+  generatedAt?: string | null;
+  playlistId?: string | null;
+  playlistTitle?: string | null;
+  videoIds?: string[] | null;
+};
+
 type PageId = "home" | "photos";
 type SectionId = "top" | "events";
 type IconName = "discord" | "youtube" | "twitch" | "email";
@@ -41,38 +57,39 @@ const DISCORD_URL = "https://discord.gg/mCwGVgjXED";
 const TWITCH_URL = "https://twitch.tv/kwtekken";
 const YOUTUBE_URL = "https://www.youtube.com/@KWTekken";
 const EMAIL_ADDRESS = "kwtekken@gmail.com";
-const STARTGG_URL =
-  "https://www.start.gg/tournament/basement-brawl-10-caf-edition/details";
-const YOUTUBE_PLAYLIST_ID = "PLSUqpdkh-18I";
+const STARTGG_BASE_URL = "https://www.start.gg";
 const LAST_YOUTUBE_VIDEO_KEY = "kwtekken:lastYoutubeVideoId";
-const YOUTUBE_PLAYLIST_VIDEO_IDS = [
-  "oxq3G09T900",
-  "2-gETroP1iw",
-  "0_lzrH5Nako",
-  "FnQ8M63Krbs",
-  "0pAwbhGkzic",
-  "Q9RAnM5_lmQ",
-  "7jq4wprFGQk",
-  "S_YM0BMqtjk",
-  "_uO7d4ZrlHI",
-];
 const SECTION_IDS: SectionId[] = ["top", "events"];
 
-const fallbackFeed: EventFeed = {
-  sourceUrl: STARTGG_URL,
-  generatedAt: null,
+const eventsFile = eventsJson as unknown as EventsFile;
+const videosFile = videosJson as unknown as VideosFile;
+
+// `npm run update` regenerates these two files from the start.gg and YouTube
+// APIs; the browser only ever reads the checked-in display data, so no API
+// credential is reachable from the bundle.
+const feed: EventFeed = {
+  sourceUrl: eventsFile.sourceUrl || STARTGG_BASE_URL,
+  generatedAt: eventsFile.generatedAt ?? null,
   tournament: {
-    name: "Basement Brawl 10: CAFÉ Edition",
-    slug: "tournament/basement-brawl-10-caf-edition",
-    startAt: 1793921400,
-    endAt: null,
-    venueAddress: "17 Benton St, Kitchener, ON N2G 1V8, Canada",
-    city: "Kitchener",
-    region: "ON",
-    countryCode: "CA",
+    name: eventsFile.tournament?.name ?? "",
+    slug: eventsFile.tournament?.slug ?? "",
+    startAt: eventsFile.tournament?.startAt ?? null,
+    endAt: eventsFile.tournament?.endAt ?? null,
+    venueAddress: eventsFile.tournament?.venueAddress ?? "",
+    city: eventsFile.tournament?.city ?? "",
+    region: eventsFile.tournament?.region ?? "",
+    countryCode: eventsFile.tournament?.countryCode ?? "",
+    embedTitle: eventsFile.tournament?.embedTitle ?? null,
+    embedDescription: eventsFile.tournament?.embedDescription ?? null,
+    embedImageUrl: eventsFile.tournament?.embedImageUrl ?? null,
   },
-  events: [],
+  events: eventsFile.events ?? [],
 };
+
+const youtubePlaylistId = videosFile.playlistId ?? "";
+const youtubeVideoIds = Array.isArray(videosFile.videoIds)
+  ? videosFile.videoIds.filter((videoId) => typeof videoId === "string" && videoId !== "")
+  : [];
 
 function formatDate(timestamp: number | null) {
   if (!timestamp) return "Date TBA";
@@ -113,8 +130,8 @@ function isAfterToday(timestamp: number | null) {
   return timestamp * 1000 >= tomorrow.getTime();
 }
 
-function eventUrl(event: SceneEvent) {
-  if (!event.slug) return STARTGG_URL;
+function eventUrl(event: SceneEvent, fallbackUrl: string) {
+  if (!event.slug) return fallbackUrl;
   return `https://www.start.gg/${event.slug}`;
 }
 
@@ -167,15 +184,26 @@ function Icon({ name }: { name: IconName }) {
   );
 }
 
-function selectRandomYoutubeVideoId() {
+function sortUpcomingEvents(events: SceneEvent[]) {
+  return events.filter((event) => isAfterToday(event.startAt)).sort((a, b) => {
+    if (!a.startAt && !b.startAt) return a.name.localeCompare(b.name);
+    if (!a.startAt) return 1;
+    if (!b.startAt) return -1;
+    return a.startAt - b.startAt;
+  });
+}
+
+function selectRandomYoutubeVideoId(videoIds: string[]): string | null {
+  if (videoIds.length === 0) return null;
+
   const lastVideoId =
     typeof window === "undefined"
       ? null
       : window.localStorage.getItem(LAST_YOUTUBE_VIDEO_KEY);
   const candidateVideos =
-    YOUTUBE_PLAYLIST_VIDEO_IDS.length > 1
-      ? YOUTUBE_PLAYLIST_VIDEO_IDS.filter((videoId) => videoId !== lastVideoId)
-      : YOUTUBE_PLAYLIST_VIDEO_IDS;
+    videoIds.length > 1
+      ? videoIds.filter((videoId) => videoId !== lastVideoId)
+      : videoIds;
 
   return candidateVideos[Math.floor(Math.random() * candidateVideos.length)];
 }
@@ -198,30 +226,19 @@ async function writeClipboardText(text: string) {
 }
 
 function App() {
-  const [feed, setFeed] = useState<EventFeed>(fallbackFeed);
   const [emailCopyState, setEmailCopyState] = useState<"idle" | "copied">(
     "idle",
   );
   const [activePage, setActivePage] = useState<PageId>(currentPageFromHash);
   const [activeSection, setActiveSection] = useState<SectionId>("top");
   const [previewPhotoUrl, setPreviewPhotoUrl] = useState<string | null>(null);
-  const [youtubeVideoId] = useState(selectRandomYoutubeVideoId);
+  const [youtubeVideoId] = useState<string | null>(() =>
+    selectRandomYoutubeVideoId(youtubeVideoIds),
+  );
 
   useEffect(() => {
-    fetch("/events.json", { cache: "no-cache" })
-      .then((response) => {
-        if (!response.ok) throw new Error("Could not load events feed");
-        return response.json() as Promise<EventFeed>;
-      })
-      .then((data) => {
-        setFeed(data);
-      })
-      .catch(() => {
-        setFeed(fallbackFeed);
-      });
-  }, []);
+    if (!youtubeVideoId) return;
 
-  useEffect(() => {
     window.localStorage.setItem(LAST_YOUTUBE_VIDEO_KEY, youtubeVideoId);
   }, [youtubeVideoId]);
 
@@ -329,18 +346,12 @@ function App() {
     };
   }, [activePage]);
 
-  const sortedEvents = useMemo(
-    () =>
-      feed.events.filter((event) => isAfterToday(event.startAt)).sort((a, b) => {
-        if (!a.startAt && !b.startAt) return a.name.localeCompare(b.name);
-        if (!a.startAt) return 1;
-        if (!b.startAt) return -1;
-        return a.startAt - b.startAt;
-      }),
-    [feed.events],
-  );
+  const sortedEvents = sortUpcomingEvents(feed.events);
 
-  const youtubeEmbedSrc = `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?list=${YOUTUBE_PLAYLIST_ID}&rel=0&vq=hd1440&hd=1`;
+  const youtubeEmbedSrc =
+    youtubeVideoId && youtubePlaylistId
+      ? `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?list=${youtubePlaylistId}&rel=0&vq=hd1440&hd=1`
+      : "";
   const emailCopyLabel =
     emailCopyState === "copied" ? "Copied to clipboard" : "Click to copy";
   const shouldShowUpcomingNotice = isTodayOrEarlier(feed.tournament.startAt);
@@ -425,17 +436,29 @@ function App() {
           <section className="video-panel" aria-label="KW Tekken VOD playlist">
             <h2>Tournament footage</h2>
             <div className="video-frame">
-              <iframe
-                key={youtubeVideoId}
-                title="KW Tekken VOD"
-                src={youtubeEmbedSrc}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
+              {youtubeEmbedSrc ? (
+                <iframe
+                  key={youtubeVideoId}
+                  title="KW Tekken VOD"
+                  src={youtubeEmbedSrc}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              ) : (
+                <a
+                  className="button secondary video-frame-fallback"
+                  href={YOUTUBE_URL}
+                  {...externalLinkProps()}
+                >
+                  VODs coming soon - watch on YouTube
+                </a>
+              )}
             </div>
-            <p className="video-quality-note">
-              Tip: choose 1440p in the player settings for the clearest video.
-            </p>
+            {youtubeEmbedSrc && (
+              <p className="video-quality-note">
+                Tip: choose 1440p in the player settings for the clearest video.
+              </p>
+            )}
             <div className="video-actions">
               <a
                 className="button primary"
@@ -506,7 +529,7 @@ function App() {
             className={`event-feature startgg-embed ${
               feed.tournament.embedImageUrl ? "" : "startgg-embed-text-only"
             }`}
-            href={feed.sourceUrl || STARTGG_URL}
+            href={feed.sourceUrl}
             {...externalLinkProps()}
           >
             {feed.tournament.embedImageUrl && (
@@ -542,7 +565,7 @@ function App() {
             {sortedEvents.map((event) => (
               <a
                 className="event-card"
-                href={eventUrl(event)}
+                href={eventUrl(event, feed.sourceUrl)}
                 key={event.id}
                 {...externalLinkProps()}
               >
