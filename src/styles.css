@@ -498,38 +498,6 @@ h3 {
   margin-top: 0.85rem;
 }
 
-.event-list {
-  display: grid;
-  gap: 0.75rem;
-  margin-top: 0.9rem;
-}
-
-.event-card {
-  align-items: center;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(248, 244, 235, 0.12);
-  display: grid;
-  gap: 0.9rem;
-  grid-template-columns: 4.8rem 1fr;
-  min-height: 5rem;
-  padding: 0.85rem;
-  position: relative;
-}
-
-.event-card-date {
-  color: #7ed5d7;
-  font-weight: 900;
-}
-
-.event-card-main {
-  display: grid;
-  gap: 0.15rem;
-}
-
-.event-card-main small {
-  color: rgba(248, 244, 235, 0.58);
-}
-
 .photo-mosaic {
   display: grid;
   gap: 0.9rem;

@@ -102,15 +102,6 @@ function formatDate(timestamp: number | null) {
   }).format(new Date(timestamp * 1000));
 }
 
-function formatShortDate(timestamp: number | null) {
-  if (!timestamp) return "TBA";
-
-  return new Intl.DateTimeFormat("en-CA", {
-    month: "short",
-    day: "numeric",
-  }).format(new Date(timestamp * 1000));
-}
-
 function isTodayOrEarlier(timestamp: number | null) {
   if (!timestamp) return false;
 
@@ -120,21 +111,6 @@ function isTodayOrEarlier(timestamp: number | null) {
 
   return timestamp * 1000 < tomorrow.getTime();
 }
-function isAfterToday(timestamp: number | null) {
-  if (!timestamp) return true;
-
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0);
-
-  return timestamp * 1000 >= tomorrow.getTime();
-}
-
-function eventUrl(event: SceneEvent, fallbackUrl: string) {
-  if (!event.slug) return fallbackUrl;
-  return `https://www.start.gg/${event.slug}`;
-}
-
 function externalLinkProps() {
   return {
     "data-tooltip": "Opens in new tab",
@@ -182,15 +158,6 @@ function Icon({ name }: { name: IconName }) {
       <path d="m5.3 8 6.7 5.2L18.7 8" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
     </svg>
   );
-}
-
-function sortUpcomingEvents(events: SceneEvent[]) {
-  return events.filter((event) => isAfterToday(event.startAt)).sort((a, b) => {
-    if (!a.startAt && !b.startAt) return a.name.localeCompare(b.name);
-    if (!a.startAt) return 1;
-    if (!b.startAt) return -1;
-    return a.startAt - b.startAt;
-  });
 }
 
 function selectRandomYoutubeVideoId(videoIds: string[]): string | null {
@@ -345,8 +312,6 @@ function App() {
       lenis.destroy();
     };
   }, [activePage]);
-
-  const sortedEvents = sortUpcomingEvents(feed.events);
 
   const youtubeEmbedSrc =
     youtubeVideoId && youtubePlaylistId
@@ -558,32 +523,6 @@ function App() {
               <span className="startgg-embed-action">View bracket details</span>
             </div>
           </a>
-        )}
-
-        {sortedEvents.length > 0 && (
-          <div className="event-list">
-            {sortedEvents.map((event) => (
-              <a
-                className="event-card"
-                href={eventUrl(event, feed.sourceUrl)}
-                key={event.id}
-                {...externalLinkProps()}
-              >
-                <span className="event-card-date">
-                  {formatShortDate(event.startAt)}
-                </span>
-                <span className="event-card-main">
-                  <strong>{event.name}</strong>
-                  <small>
-                    {event.videogame ? `${event.videogame}` : "Bracket"}
-                    {typeof event.numEntrants === "number"
-                      ? ` - ${event.numEntrants} entrants`
-                      : ""}
-                  </small>
-                </span>
-              </a>
-            ))}
-          </div>
         )}
           </section>
         </>
