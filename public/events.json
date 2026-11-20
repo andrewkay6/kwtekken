@@ -1,26 +1,26 @@
 {
-  "sourceUrl": "https://www.start.gg/tournament/basement-brawl-11-caf-edition/details",
-  "generatedAt": "2026-11-14T21:28:37.000Z",
+  "sourceUrl": "https://www.start.gg/tournament/basement-brawl-12-caf-edition/details",
+  "generatedAt": "2026-11-20T18:52:59.000Z",
   "tournament": {
-    "name": "Basement Brawl #11 (CAFÉ EDITION)",
-    "slug": "tournament/basement-brawl-11-caf-edition",
-    "startAt": 1795131000,
-    "endAt": 1795141800,
+    "name": "Basement Brawl #12 (CAFÉ EDITION)",
+    "slug": "tournament/basement-brawl-12-caf-edition",
+    "startAt": 1796340600,
+    "endAt": 1796351400,
     "venueAddress": "17 Benton St, Kitchener, ON N2G 1V8, Canada",
     "city": "Kitchener",
     "region": "ON",
     "countryCode": "CA",
-    "embedTitle": "Basement Brawl #11 (CAFÉ EDITION)",
-    "embedDescription": "The best place for Basement Brawl #11 (CAFÉ EDITION) brackets, streams, standings and schedules all in one place!",
-    "embedImageUrl": "https://images.start.gg/images/tournament/974578/image-4e436e85b018fc81dd2a9a1a1171a6d6-optimized.png"
+    "embedTitle": "Basement Brawl #12 (CAFÉ EDITION)",
+    "embedDescription": "The best place for Basement Brawl #12 (CAFÉ EDITION) brackets, streams, standings and schedules all in one place!",
+    "embedImageUrl": "https://images.start.gg/images/tournament/976932/image-7fee5a93bd8f8f5200d92df884249d2a-optimized.png"
   },
   "events": [
     {
-      "id": 1755058,
+      "id": 1760207,
       "name": "Tekken 8 Singles",
-      "slug": "tournament/basement-brawl-11-caf-edition/event/tekken-8-singles",
-      "startAt": 1795131000,
-      "numEntrants": 5,
+      "slug": "tournament/basement-brawl-12-caf-edition/event/tekken-8-singles",
+      "startAt": 1796340600,
+      "numEntrants": 3,
       "videogame": "TEKKEN 8"
     }
   ]
